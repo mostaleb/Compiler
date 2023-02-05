@@ -17,6 +17,5 @@
 [ukn, 012.34e10, 15]
 [ukn, 12.34e010, 16]
 [ukn, _abc, 18]
-[integer, 1, 19]
-[id, abc, 19]
+[ukn, 1abc, 19]
 [ukn, _1abc, 20]

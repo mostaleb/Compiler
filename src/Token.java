@@ -75,8 +75,6 @@ public class Token {
         COMMENT_BLOCK("/**/"),
         COMMENT_INLINE("//"),
         UNKNOWN("ukn"),
-        UNKNOWN_CHAR("unkChar"),
-        UNKNOWN_INTEGER("unkInteger"),
         EOF("eof");
 
         private final String value;

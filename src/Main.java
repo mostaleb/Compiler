@@ -236,6 +236,7 @@ public class Main {
 
     private static void handleNumbers(PushbackReader read) throws IOException {
         int intValue;
+        boolean ignore = false;
         while ((intValue = read.read()) != -1) {
             positionCounter++;
             char c = (char) intValue;
@@ -248,7 +249,10 @@ public class Main {
                 if(tokenType == null)
                     tokenType = Token.TokenType.FLOAT;
                 return;
-            }else {
+            } else if(Character.isLetter(c)){
+              lexeme += c;
+              tokenType = Token.TokenType.UNKNOWN;
+            } else {
                 positionCounter--;
                 read.unread(intValue);
                 break;
@@ -275,6 +279,7 @@ public class Main {
                     tokenType = Token.TokenType.INTEGER;
                 }
             }
+
         }
 
     }
