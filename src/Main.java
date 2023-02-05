@@ -31,6 +31,7 @@ public class Main {
                             }
                             if(tokenType == Token.TokenType.UNKNOWN){
                                 pwe.println(token.toString());
+                                pw.println(token.toString());
                             } else {
                                 pw.println(token.toString());
                             }
@@ -235,40 +236,75 @@ public class Main {
 
     private static void handleNumbers(PushbackReader read) throws IOException {
         int intValue;
-        if(lexeme.equals("0")){
-            read.unread('0');
-            lexeme = "";
-        }
         while ((intValue = read.read()) != -1) {
             positionCounter++;
             char c = (char) intValue;
             if(Character.isDigit(c)){
                 lexeme += c;
-                if(lexeme.equals("0")){
-                    tokenType = Token.TokenType.INTEGER;
-                    return;
-                }
             }else if (c == '.') {
                 lexeme += c;
                 handleDecimal(read);
+                zeroVerification();
                 if(tokenType == null)
                     tokenType = Token.TokenType.FLOAT;
                 return;
-            } else {
+            }else {
                 positionCounter--;
                 read.unread(intValue);
                 break;
             }
 
         }
-        tokenType = Token.TokenType.INTEGER;
-    }
+        if(tokenType == null){
+            if(lexeme.contains(".")){
+                if(lexeme.split(".")[0].charAt(0) == '0' && lexeme.length() > 1){
+                    tokenType = Token.TokenType.UNKNOWN;
+                } else {
+                    tokenType = Token.TokenType.INTEGER;
+                }
+            } else if (lexeme.contains("e")){
+                if(lexeme.split("e")[0].charAt(0) == '0' && lexeme.length() > 1){
+                    tokenType = Token.TokenType.UNKNOWN;
+                } else {
+                    tokenType = Token.TokenType.INTEGER;
+                }
+            } else {
+                if(lexeme.charAt(0) == '0' && lexeme.length() > 1){
+                    tokenType = Token.TokenType.UNKNOWN;
+                } else {
+                    tokenType = Token.TokenType.INTEGER;
+                }
+            }
+        }
 
+    }
+    private static void zeroVerification(){
+        if(tokenType == Token.TokenType.FLOAT || tokenType == null && !lexeme.isEmpty()){
+            if(lexeme.contains(".")){
+                if(lexeme.split("\\.")[0].charAt(0) == '0' && lexeme.split("\\.")[0].length() > 1){
+                    tokenType = Token.TokenType.UNKNOWN;
+                } else {
+                    tokenType = Token.TokenType.FLOAT;
+                }
+            } else if (lexeme.contains("e")){
+                if(lexeme.split("e")[0].charAt(0) == '0' && lexeme.split("e")[0].length() > 1){
+                    tokenType = Token.TokenType.UNKNOWN;
+                } else {
+                    tokenType = Token.TokenType.FLOAT;
+                }
+            } else {
+                if(lexeme.charAt(0) == '0' && lexeme.length() > 1){
+                    tokenType = Token.TokenType.UNKNOWN;
+                } else {
+                    tokenType = Token.TokenType.FLOAT;
+                }
+            }
+        }
+    }
     private static void handleDecimal(PushbackReader read) throws IOException {
         int intValue;
         String tempLexeme = "";
         while ((intValue = read.read()) != -1) {
-
             positionCounter++;
             char c = (char) intValue;
             if (Character.isDigit(c)) {
@@ -290,6 +326,8 @@ public class Main {
         if(tempLexeme.endsWith("0") && tempLexeme.length() > 1){
             tokenType = Token.TokenType.UNKNOWN;
         }
+
+
 
     }
 
