@@ -2,7 +2,7 @@
   <artifact type="jar" name="LexicalAnalyzer:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/LexicalAnalyzer_jar</output-path>
     <root id="archive" name="LexicalAnalyzer.jar">
-      <element id="module-output" name="LexicalAnalyzer" />
+      <element id="module-output" name="Compiler" />
       <element id="module-output" name="test" />
     </root>
   </artifact>
