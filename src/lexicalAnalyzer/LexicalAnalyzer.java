@@ -1,6 +1,8 @@
+package lexicalAnalyzer;
+
 import java.io.*;
 
-public class Main {
+public class LexicalAnalyzer {
     private static int lineCounter = 1;//counts the lines the parser is on.
     private static int positionCounter = 0;//counts the position of the line the parser is on.
     private static String lexeme = "";

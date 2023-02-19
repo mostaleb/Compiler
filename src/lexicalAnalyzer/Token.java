@@ -1,3 +1,5 @@
+package lexicalAnalyzer;
+
 public class Token {
     //location is a string with 2 values seperated by a " "
     private String location;
