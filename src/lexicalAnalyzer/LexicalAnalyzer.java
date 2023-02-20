@@ -3,76 +3,35 @@ package lexicalAnalyzer;
 import java.io.*;
 
 public class LexicalAnalyzer {
-    private static int lineCounter = 1;//counts the lines the parser is on.
-    private static int positionCounter = 0;//counts the position of the line the parser is on.
-    private static String lexeme = "";
-    private static Token.TokenType tokenType = null;
+    private int lineCounter = 1;//counts the lines the parser is on.
+    private int positionCounter = 0;//counts the position of the line the parser is on.
 
-    public static void main(String[] args) {
-        File folder = new File("./test");
-        File[] listOfFiles = folder.listFiles();
-
-        for (File file : listOfFiles) {
-            if (file.isFile()) {
-                if(file.getName().endsWith(".src")){
-                    File input = new File("./test/" + file.getName());
-                    File output = new File("./test/"+ file.getName().substring(0, file.getName().length()-4) + ".lextokens");
-                    File outputError = new File("./test/"+ file.getName().substring(0, file.getName().length()-4)+ ".lexerrors");
-                    lineCounter = 1;
-                    PrintWriter pw = null;
-                    PrintWriter pwe = null;
-                    PushbackReader reader = null;
-                    try {
-                        reader = new PushbackReader(new FileReader(file));
-                        pw = new PrintWriter(output);
-                        pwe = new PrintWriter((outputError));
-                        Token token;
-                        while ((token = nextToken(reader)) != null) {
-                            if (token.getType() == Token.TokenType.EOF) {
-                                break;
-                            }
-                            if(tokenType == Token.TokenType.UNKNOWN){
-                                pwe.println(token.toString());
-                                pw.println(token.toString());
-                            } else {
-                                pw.println(token.toString());
-                            }
-
-                            lexeme = "";
-                            tokenType = null;
-
-                        }
-                    } catch (FileNotFoundException e) {
-                        System.out.println("File not found: " + e.getMessage());
-                    } catch (IOException e) {
-                        System.out.println("Error reading file: " + e.getMessage());
-                    } catch (NullPointerException e) {
-                        System.out.println("NullPointerException: " + e.getMessage());
-                        e.printStackTrace();
-                    } finally {
-                        try {
-                            if (reader != null) {
-                                reader.close();
-                            }
-                            pw.close();
-                            pwe.close();
-                        } catch (IOException e) {
-                            System.out.println("Error closing file: " + e.getMessage());
-                        } catch (NullPointerException e){
-                            System.out.println("NullPointerException: " + e.getMessage());
-                        }
-                    }
-                }
-            }
-        }
-
+    public void setLineCounter(int lineCounter) {
+        this.lineCounter = lineCounter;
+    }
+    public void setPositionCounter(int positionCounter) {
+        this.positionCounter = positionCounter;
     }
 
+    public  void setLexeme(String lexeme) {
+        this.lexeme = lexeme;
+    }
 
-    private static Token nextToken(PushbackReader read) throws IOException {
+    public  void setTokenType(Token.TokenType tokenType) {
+        this.tokenType = tokenType;
+    }
+
+    private String lexeme = "";
+
+    public Token.TokenType getTokenType() {
+        return tokenType;
+    }
+
+    private Token.TokenType tokenType = null;
+
+    public Token nextToken(PushbackReader read) throws IOException {
         int intValue;
         while ((intValue = read.read()) != -1) {
-
             char c = (char) intValue;
             if (c != ' ' && c != '\n' && c != '\r' && c != '\t')
                 lexeme += c;
@@ -158,7 +117,7 @@ public class LexicalAnalyzer {
         return new Token(lineCounter + " " + positionCounter, "", Token.TokenType.EOF);
     }
 
-    private static void handleError(PushbackReader read) throws IOException {
+    private void handleError(PushbackReader read) throws IOException {
         int intValue;
         while ((intValue = read.read()) != -1) {
             positionCounter++;
@@ -173,7 +132,7 @@ public class LexicalAnalyzer {
         tokenType = Token.TokenType.UNKNOWN;
     }
 
-    private static void handleLetters(PushbackReader read) throws IOException {
+    private void handleLetters(PushbackReader read) throws IOException {
         int intValue;
         while ((intValue = read.read()) != -1) {
             positionCounter++;
@@ -236,7 +195,7 @@ public class LexicalAnalyzer {
 
     }
 
-    private static void handleNumbers(PushbackReader read) throws IOException {
+    private void handleNumbers(PushbackReader read) throws IOException {
         int intValue;
         boolean ignore = false;
         while ((intValue = read.read()) != -1) {
@@ -285,7 +244,7 @@ public class LexicalAnalyzer {
         }
 
     }
-    private static void zeroVerification(){
+    private void zeroVerification(){
         if(tokenType == Token.TokenType.FLOAT || tokenType == null && !lexeme.isEmpty()){
             if(lexeme.contains(".")){
                 if(lexeme.split("\\.")[0].charAt(0) == '0' && lexeme.split("\\.")[0].length() > 1){
@@ -308,7 +267,7 @@ public class LexicalAnalyzer {
             }
         }
     }
-    private static void handleDecimal(PushbackReader read) throws IOException {
+    private void handleDecimal(PushbackReader read) throws IOException {
         int intValue;
         String tempLexeme = "";
         while ((intValue = read.read()) != -1) {
@@ -338,7 +297,7 @@ public class LexicalAnalyzer {
 
     }
 
-    private static void handleExponant(PushbackReader read) throws IOException {
+    private void handleExponant(PushbackReader read) throws IOException {
         int intValue;
         while ((intValue = read.read()) != -1) {
             positionCounter++;
@@ -367,7 +326,7 @@ public class LexicalAnalyzer {
         }
     }
 
-    private static void handleEqual(PushbackReader read) throws IOException {
+    private void handleEqual(PushbackReader read) throws IOException {
         int intValue;
         if ((intValue = read.read()) != -1) {
             positionCounter++;
@@ -386,7 +345,7 @@ public class LexicalAnalyzer {
         }
     }
 
-    private static void handleLessThan(PushbackReader read) throws IOException {
+    private void handleLessThan(PushbackReader read) throws IOException {
         int intValue = read.read();
         if (intValue == -1) {
             tokenType = Token.TokenType.OPERATOR_LT;
@@ -406,7 +365,7 @@ public class LexicalAnalyzer {
         }
     }
 
-    private static Token handleSlash(PushbackReader read) throws IOException {
+    private Token handleSlash(PushbackReader read) throws IOException {
         int intValue = read.read();
 
         char c = (char) intValue;
@@ -427,7 +386,7 @@ public class LexicalAnalyzer {
         }
     }
 
-    private static void handleBlockComment(PushbackReader read) throws IOException {
+    private void handleBlockComment(PushbackReader read) throws IOException {
         tokenType = Token.TokenType.COMMENT_BLOCK;
         int intValue;
         while ((intValue = read.read()) != -1) {
@@ -456,7 +415,7 @@ public class LexicalAnalyzer {
         tokenType = Token.TokenType.UNKNOWN;
     }
 
-    private static void handleLineComment(PushbackReader read) throws IOException {
+    private void handleLineComment(PushbackReader read) throws IOException {
         tokenType = Token.TokenType.COMMENT_INLINE;
         int intValue;
         while ((intValue = read.read()) != -1) {
@@ -471,7 +430,7 @@ public class LexicalAnalyzer {
     }
 
 
-    private static void handleGreaterThan(PushbackReader read) throws IOException {
+    private void handleGreaterThan(PushbackReader read) throws IOException {
         int intValue = read.read();
         if (intValue == -1) {
             tokenType = Token.TokenType.OPERATOR_GT;
@@ -489,7 +448,7 @@ public class LexicalAnalyzer {
         }
     }
 
-    private static void handleColon(PushbackReader read) throws IOException {
+    private void handleColon(PushbackReader read) throws IOException {
         int intValue = read.read();
         if (intValue == -1) {
             tokenType = Token.TokenType.PUNCTUATION_COLON;

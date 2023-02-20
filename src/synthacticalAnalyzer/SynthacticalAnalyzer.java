@@ -1,185 +1,193 @@
 package synthacticalAnalyzer;
 
+import lexicalAnalyzer.LexicalAnalyzer;
+
 public class SynthacticalAnalyzer {
-    public String (){
+    private String currentToken;
+    public SynthacticalAnalyzer(LexicalAnalyzer lex){
 
     }
-    public String (){
-
+    private String START(){
+    return null;
     }
-    public String (){
-
+    private String reptStart0(){
+    return null;
     }
-    public String (){
-
+    private String classDeclOrFuncDef(){
+    return null;
     }
-    public String (){
-
+    private String funcDef(){
+    return null;
     }
-    public String (){
-
+    private String funcHead(){
+    return null;
     }
-    public String (){
-
+    private String funcBody(){
+    return null;
     }
-    public String (){
-
+    private String funcHead1(){
+    return null;
     }
-    public String (){
-
+    private String reptFuncBody1(){
+    return null;
     }
-    public String (){
-
+    private String localVarDeclOrStmt(){
+    return null;
     }
-    public String (){
-
+    private String statement(){
+    return null;
     }
-    public String (){
-
+    private String statBlock(){
+    return null;
     }
-    public String (){
-
+    private String reptStatBlock1(){
+    return null;
     }
-    public String (){
-
+    private String relExpr(){
+    return null;
     }
-    public String (){
-
+    private String arithExpr(){
+    return null;
     }
-    public String (){
-
+    private String variable(){
+    return null;
     }
-    public String (){
-
+    private String reptVariable0(){
+    return null;
     }
-    public String (){
-
+    private String idnest(){
+    return null;
     }
-    public String (){
-
+    private String idnest1(){
+    return null;
     }
-    public String (){
-
+    private String reptIdnest1(){
+    return null;
     }
-    public String (){
-
+    private String indice(){
+    return null;
     }
-    public String (){
-
+    private String aParams(){
+    return null;
     }
-    public String (){
-
+    private String aParamsTail(){
+    return null;
     }
-    public String (){
-
+    private String addOp(){
+    return null;
     }
-    public String (){
-
+    private String arraySize(){
+    return null;
     }
-    public String (){
-
+    private String arraySize1(){
+    return null;
     }
-    public String (){
-
+    private String assignOp(){
+    return null;
     }
-    public String (){
-
+    private String classDecl(){
+    return null;
     }
-    public String (){
-
+    private String expr(){
+    return null;
     }
-    public String (){
-
+    private String x(){
+    return null;
     }
-    public String (){
-
+    private String fParams(){
+    return null;
     }
-    public String (){
-
+    private String fParamsTail(){
+    return null;
     }
-    public String (){
-
+    private String factor(){
+    return null;
     }
-    public String (){
-
+    private String temp1(){
+    return null;
     }
-    public String (){
-
+    private String temp2(){
+    return null;
     }
-    public String (){
-
+    private String funcHead2(){
+    return null;
     }
-    public String (){
-
+    private String localVarDecl(){
+    return null;
     }
-    public String (){
-
+    private String localVarDecl1(){
+    return null;
     }
-    public String (){
-
+    private String memberDecl(){
+    return null;
     }
-    public String (){
-
+    private String memberFuncDecl(){
+    return null;
     }
-    public String (){
-
+    private String memberVarDecl(){
+    return null;
     }
-    public String (){
-
+    private String multOp(){
+    return null;
     }
-    public String (){
-
+    private String optClassDecl2(){
+    return null;
     }
-    public String (){
-
+    private String relOp(){
+    return null;
     }
-    public String (){
-
+    private String reptAParams1(){
+    return null;
     }
-    public String (){
-
+    private String reptClassDecl4(){
+    return null;
     }
-    public String (){
-
+    private String reptFParams3(){
+    return null;
     }
-    public String (){
-
+    private String reptFParams4 (){
+    return null;
     }
-    public String (){
-
+    private String reptFParamsTail4(){
+    return null;
     }
-    public String (){
-
+    private String reptLocalVarDecl4(){
+    return null;
     }
-    public String (){
-
+    private String reptMemberVarDecl4(){
+    return null;
     }
-    public String (){
-
+    private String reptOptClassDecl22(){
+    return null;
     }
-    public String (){
-
+    private String reptVariable2(){
+    return null;
     }
-    public String (){
-
+    private String returnType(){
+    return null;
     }
-    public String (){
-
+    private String rightrecArithExpr (){
+    return null;
     }
-    public String (){
-
+    private String rightrecTerm(){
+    return null;
     }
-    public String (){
-
+    private String sign(){
+    return null;
     }
-    public String (){
-
+    private String t1(){
+    return null;
     }
-    public String (){
-
+    private String t2(){
+    return null;
     }
-    public String (){
-
+    private String term(){
+    return null;
     }
-
+    private String type(){
+    return null;
+    }
+    private String visibility(){
+        return null;
+    }
 }
