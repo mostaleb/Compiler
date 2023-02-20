@@ -7,187 +7,187 @@ public class SynthacticalAnalyzer {
     public SynthacticalAnalyzer(LexicalAnalyzer lex){
 
     }
-    private String START(){
-    return null;
+    private boolean START(){
+    return true;
     }
-    private String reptStart0(){
-    return null;
+    private boolean reptStart0(){
+    return true;
     }
-    private String classDeclOrFuncDef(){
-    return null;
+    private boolean classDeclOrFuncDef(){
+    return true;
     }
-    private String funcDef(){
-    return null;
+    private boolean funcDef(){
+    return true;
     }
-    private String funcHead(){
-    return null;
+    private boolean funcHead(){
+    return true;
     }
-    private String funcBody(){
-    return null;
+    private boolean funcBody(){
+    return true;
     }
-    private String funcHead1(){
-    return null;
+    private boolean funcHead1(){
+    return true;
     }
-    private String reptFuncBody1(){
-    return null;
+    private boolean reptFuncBody1(){
+    return true;
     }
-    private String localVarDeclOrStmt(){
-    return null;
+    private boolean localVarDeclOrStmt(){
+    return true;
     }
-    private String statement(){
-    return null;
+    private boolean statement(){
+    return true;
     }
-    private String statBlock(){
-    return null;
+    private boolean statBlock(){
+    return true;
     }
-    private String reptStatBlock1(){
-    return null;
+    private boolean reptStatBlock1(){
+    return true;
     }
-    private String relExpr(){
-    return null;
+    private boolean relExpr(){
+    return true;
     }
-    private String arithExpr(){
-    return null;
+    private boolean arithExpr(){
+    return true;
     }
-    private String variable(){
-    return null;
+    private boolean variable(){
+    return true;
     }
-    private String reptVariable0(){
-    return null;
+    private boolean reptVariable0(){
+    return true;
     }
-    private String idnest(){
-    return null;
+    private boolean idnest(){
+    return true;
     }
-    private String idnest1(){
-    return null;
+    private boolean idnest1(){
+    return true;
     }
-    private String reptIdnest1(){
-    return null;
+    private boolean reptIdnest1(){
+    return true;
     }
-    private String indice(){
-    return null;
+    private boolean indice(){
+    return true;
     }
-    private String aParams(){
-    return null;
+    private boolean aParams(){
+    return true;
     }
-    private String aParamsTail(){
-    return null;
+    private boolean aParamsTail(){
+    return true;
     }
-    private String addOp(){
-    return null;
+    private boolean addOp(){
+    return true;
     }
-    private String arraySize(){
-    return null;
+    private boolean arraySize(){
+    return true;
     }
-    private String arraySize1(){
-    return null;
+    private boolean arraySize1(){
+    return true;
     }
-    private String assignOp(){
-    return null;
+    private boolean assignOp(){
+    return true;
     }
-    private String classDecl(){
-    return null;
+    private boolean classDecl(){
+    return true;
     }
-    private String expr(){
-    return null;
+    private boolean expr(){
+    return true;
     }
-    private String x(){
-    return null;
+    private boolean x(){
+    return true;
     }
-    private String fParams(){
-    return null;
+    private boolean fParams(){
+    return true;
     }
-    private String fParamsTail(){
-    return null;
+    private boolean fParamsTail(){
+    return true;
     }
-    private String factor(){
-    return null;
+    private boolean factor(){
+    return true;
     }
-    private String temp1(){
-    return null;
+    private boolean temp1(){
+    return true;
     }
-    private String temp2(){
-    return null;
+    private boolean temp2(){
+    return true;
     }
-    private String funcHead2(){
-    return null;
+    private boolean funcHead2(){
+    return true;
     }
-    private String localVarDecl(){
-    return null;
+    private boolean localVarDecl(){
+    return true;
     }
-    private String localVarDecl1(){
-    return null;
+    private boolean localVarDecl1(){
+    return true;
     }
-    private String memberDecl(){
-    return null;
+    private boolean memberDecl(){
+    return true;
     }
-    private String memberFuncDecl(){
-    return null;
+    private boolean memberFuncDecl(){
+    return true;
     }
-    private String memberVarDecl(){
-    return null;
+    private boolean memberVarDecl(){
+    return true;
     }
-    private String multOp(){
-    return null;
+    private boolean multOp(){
+    return true;
     }
-    private String optClassDecl2(){
-    return null;
+    private boolean optClassDecl2(){
+    return true;
     }
-    private String relOp(){
-    return null;
+    private boolean relOp(){
+    return true;
     }
-    private String reptAParams1(){
-    return null;
+    private boolean reptAParams1(){
+    return true;
     }
-    private String reptClassDecl4(){
-    return null;
+    private boolean reptClassDecl4(){
+    return true;
     }
-    private String reptFParams3(){
-    return null;
+    private boolean reptFParams3(){
+    return true;
     }
-    private String reptFParams4 (){
-    return null;
+    private boolean reptFParams4 (){
+    return true;
     }
-    private String reptFParamsTail4(){
-    return null;
+    private boolean reptFParamsTail4(){
+    return true;
     }
-    private String reptLocalVarDecl4(){
-    return null;
+    private boolean reptLocalVarDecl4(){
+    return true;
     }
-    private String reptMemberVarDecl4(){
-    return null;
+    private boolean reptMemberVarDecl4(){
+    return true;
     }
-    private String reptOptClassDecl22(){
-    return null;
+    private boolean reptOptClassDecl22(){
+    return true;
     }
-    private String reptVariable2(){
-    return null;
+    private boolean reptVariable2(){
+    return true;
     }
-    private String returnType(){
-    return null;
+    private boolean returnType(){
+    return true;
     }
-    private String rightrecArithExpr (){
-    return null;
+    private boolean rightrecArithExpr (){
+    return true;
     }
-    private String rightrecTerm(){
-    return null;
+    private boolean rightrecTerm(){
+    return true;
     }
-    private String sign(){
-    return null;
+    private boolean sign(){
+    return true;
     }
-    private String t1(){
-    return null;
+    private boolean t1(){
+    return true;
     }
-    private String t2(){
-    return null;
+    private boolean t2(){
+    return true;
     }
-    private String term(){
-    return null;
+    private boolean term(){
+    return true;
     }
-    private String type(){
-    return null;
+    private boolean type(){
+    return true;
     }
-    private String visibility(){
-        return null;
+    private boolean visibility(){
+        return true;
     }
 }
