@@ -81,6 +81,7 @@ public class Token {
         RESERVED_READ("read"),
         COMMENT_BLOCK("/**/"),
         COMMENT_INLINE("//"),
+        SCOPE_RESOLUTION("sr"),
         UNKNOWN("ukn"),
         EOF("eof");
 
