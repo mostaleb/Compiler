@@ -10,8 +10,8 @@ import java.util.Locale;
 public class SynthacticalAnalyzer {
     private Token lookahead;
     private LexicalAnalyzer lexer;
-    private PrintWriter pwDerivation;
-    private PrintWriter pwError;
+    private PrintWriter pwDerivation = new PrintWriter(new FileWriter("parser/example-polynomial.outderivation.src", true));;
+    private PrintWriter pwError = new PrintWriter(new FileWriter("parser/example-polynomial.outsyntaxerror.src", true));;
     public SynthacticalAnalyzer(LexicalAnalyzer lexer) throws IOException {
         this.lexer = lexer;
         this.lookahead = lexer.nextToken();
@@ -29,23 +29,23 @@ public class SynthacticalAnalyzer {
         }
     }
     private void write(String LHS, String RHS) throws IOException {
-        pwDerivation = new PrintWriter(new FileWriter("parser/example-bubblesort.outderivation.src", true));
         pwDerivation.println(LHS + " -> " + RHS);
-        pwDerivation.close();
     }
     private void skip() throws IOException {
         lookahead = lexer.nextToken();
     }
 
     private void error(String LHS, String RHS) throws IOException {
-        //write the error file.
-        pwError = new PrintWriter(new FileWriter("parser/example-bubblesort.outsyntaxerror.src", true));
         pwError.println(LHS + " -> " + RHS);
-        pwError.close();
+
     }
 
     public boolean parse() throws IOException {
-        return start();
+        boolean start = start();
+        pwDerivation.close();
+        pwError.close();
+        return start;
+
     }
 
     private Token.TokenType getType() {
@@ -70,7 +70,7 @@ public class SynthacticalAnalyzer {
         }
     }
 
-
+    //CLASSDECLORFUNCDEF         -> FUNCDEF | CLASSDECL
     private boolean classDeclOrFuncDef() throws IOException {
         if (getType() == Token.TokenType.RESERVED_CLASS) {
             return classDecl();
@@ -279,7 +279,7 @@ public class SynthacticalAnalyzer {
             return false;
         }
     }
-
+    //ASSIGNOP                   -> equal
     private boolean assignOp() throws IOException {
         if (getType() == Token.TokenType.OPERATOR_ASSIGN) {
             if (match(Token.TokenType.OPERATOR_ASSIGN)) {
@@ -429,7 +429,8 @@ public class SynthacticalAnalyzer {
         }
 
     }
-
+    //APARAMS                    -> EXPR REPTAPARAMS1 | EPSILON
+    //first: {lpar, floatlit, id, intlit, not, minus, plus}
     private boolean aParams() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LPAREN || getType() == Token.TokenType.FLOAT || getType() == Token.TokenType.INTEGER
                 || getType() == Token.TokenType.RESERVED_NOT || getType() == Token.TokenType.ID || getType() == Token.TokenType.OPERATOR_PLUS
@@ -445,12 +446,13 @@ public class SynthacticalAnalyzer {
             return false;
         }
     }
-
+    //EXPR                       -> ARITHEXPR EXPR2
+    //FIRST(0) = {lpar, floatlit, id, intlit, not, minus, plus}
     private boolean expr() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LPAREN || getType() == Token.TokenType.FLOAT || getType() == Token.TokenType.INTEGER
                 || getType() == Token.TokenType.RESERVED_NOT || getType() == Token.TokenType.ID || getType() == Token.TokenType.OPERATOR_PLUS
                 || getType() == Token.TokenType.OPERATOR_MINUS) {
-            if (arithExpr() && x()) {
+            if (arithExpr() && expr2()) {
                 return true;
             } else {
                 return false;
@@ -459,8 +461,8 @@ public class SynthacticalAnalyzer {
             return false;
         }
     }
-
-    private boolean x() throws IOException {
+    //EXPR2                      -> RELOP ARITHEXPR | EPSILON
+    private boolean expr2() throws IOException {
         if (getType() == Token.TokenType.OPERATOR_EQ || getType() == Token.TokenType.OPERATOR_GT || getType() == Token.TokenType.OPERATOR_GE
                 || getType() == Token.TokenType.OPERATOR_LE || getType() == Token.TokenType.OPERATOR_LT || getType() == Token.TokenType.OPERATOR_NE) {
             if (relOp() && arithExpr()) {
@@ -517,7 +519,8 @@ public class SynthacticalAnalyzer {
             return false;
         }
     }
-
+    //ARITHEXPR                  -> TERM RIGHTRECARITHEXPR
+    //FIRST(0) = {	lpar, floatlit, id, intlit, not, minus, plus}
     private boolean arithExpr() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LPAREN || getType() == Token.TokenType.FLOAT || getType() == Token.TokenType.INTEGER
                 || getType() == Token.TokenType.RESERVED_NOT || getType() == Token.TokenType.ID || getType() == Token.TokenType.OPERATOR_PLUS
@@ -547,7 +550,7 @@ public class SynthacticalAnalyzer {
             return false;
         }
     }
-
+    //   ADDOP                      -> minus | or | plus
     private boolean addOp() throws IOException {
         if(getType() == Token.TokenType.RESERVED_OR){
             if(match(Token.TokenType.RESERVED_OR)){
@@ -585,7 +588,12 @@ public class SynthacticalAnalyzer {
             return false;
         }
     }
-
+    //FACTOR                     -> lpar ARITHEXPR rpar
+    //                               | floatlit
+    //                               | id FACTOR2 REPTVARIABLEORFUNCTIONCALL
+    //                               | intlit
+    //                               | not FACTOR
+    //                               | SIGN FACTOR
     private boolean factor() throws IOException {
         if(getType() == Token.TokenType.OPERATOR_PLUS || getType() == Token.TokenType.OPERATOR_MINUS){
             if(sign() && factor()){
@@ -594,7 +602,7 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else if (getType() == Token.TokenType.ID) {
-            if(reptVariable0() && temp1()){
+            if(reptVariable0() && factor2() && reptVariableOrFunctionCall()){
                 return true;
             } else {
                 return  false;
@@ -646,9 +654,9 @@ public class SynthacticalAnalyzer {
         }
     }
 
-    private boolean temp1() throws IOException {
-        if(getType() == Token.TokenType.ID){
-            if(match(Token.TokenType.ID) && temp2()){
+    private boolean factor2() throws IOException {
+        if(getType() == Token.TokenType.PUNCTUATION_LPAREN){
+            if(match(Token.TokenType.PUNCTUATION_LPAREN) && aParams() && match(Token.TokenType.PUNCTUATION_RPAREN)){
                 return true;
             } else {
                 return false;
@@ -737,7 +745,7 @@ public class SynthacticalAnalyzer {
             return false;
         }
     }
-
+    //APARAMSTAIL                -> comma EXPR
     private boolean aParamsTail() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_COMMA) {
             if (match(Token.TokenType.PUNCTUATION_COMMA) && expr()) {
@@ -789,11 +797,11 @@ public class SynthacticalAnalyzer {
             return false;
         }
     }
-
+    //CLASSDECL                  -> class id OPTINHERITS lcurbr REPTMEMBERDECL rcurbr semi
     private boolean classDecl() throws IOException {
         if (getType() == Token.TokenType.RESERVED_CLASS) {
-            if (match(Token.TokenType.RESERVED_CLASS) && match(Token.TokenType.ID) && optClassDecl2() && match(Token.TokenType.PUNCTUATION_LCURLY)
-                    && reptClassDecl4() && match(Token.TokenType.PUNCTUATION_RCURLY) && match(Token.TokenType.PUNCTUATION_SEMICOLON)) {
+            if (match(Token.TokenType.RESERVED_CLASS) && match(Token.TokenType.ID) && optInherits() && match(Token.TokenType.PUNCTUATION_LCURLY)
+                    && reptMemberDecl() && match(Token.TokenType.PUNCTUATION_RCURLY) && match(Token.TokenType.PUNCTUATION_SEMICOLON)) {
                 return true;
             } else {
                 return false;
@@ -803,9 +811,10 @@ public class SynthacticalAnalyzer {
         }
     }
 
-    private boolean optClassDecl2() throws IOException {
+    // OPTINHERITS                -> isa id REPTINHERITSLIST | EPSILON
+    private boolean optInherits() throws IOException {
         if (getType() == Token.TokenType.RESERVED_ISA) {
-            if (match(Token.TokenType.RESERVED_ISA) && match(Token.TokenType.ID) && reptOptClassDecl22()) {
+            if (match(Token.TokenType.RESERVED_ISA) && match(Token.TokenType.ID) && reptInheritsList()) {
                 return true;
             } else {
                 return false;
@@ -816,10 +825,10 @@ public class SynthacticalAnalyzer {
             return false;
         }
     }
-
-    private boolean reptClassDecl4() throws IOException {
-        if (getType() == Token.TokenType.RESERVED_PRIVATE) {
-            if (visibility() && memberDecl() && reptClassDecl4()) {
+    //REPTMEMBERDECL             -> VISIBILITY MEMBERDECL REPTMEMBERDECL | EPSILON
+    private boolean reptMemberDecl() throws IOException {
+        if (getType() == Token.TokenType.RESERVED_PRIVATE || getType() == Token.TokenType.RESERVED_PUBLIC) {
+            if (visibility() && memberDecl() && reptMemberDecl()) {
                 return true;
             } else {
                 return false;
@@ -1016,10 +1025,10 @@ public class SynthacticalAnalyzer {
             return false;
         }
     }
-
+    //ARRAYSIZE                  -> lsqbr ARRAYSIZE2
     private boolean arraySize() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LBRACKET) {
-            if (match(Token.TokenType.PUNCTUATION_LBRACKET) && arraySize1()) {
+            if (match(Token.TokenType.PUNCTUATION_LBRACKET) && arraySize2()) {
                 return true;
             } else {
                 return false;
@@ -1028,8 +1037,8 @@ public class SynthacticalAnalyzer {
             return false;
         }
     }
-
-    private boolean arraySize1() throws IOException {
+    // ARRAYSIZE2                 -> intlit rsqbr | rsqbr
+    private boolean arraySize2() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_RBRACKET) {
             if (match(Token.TokenType.PUNCTUATION_RBRACKET)) {
                 return true;
@@ -1060,4 +1069,39 @@ public class SynthacticalAnalyzer {
             return false;
         }
     }
+    //ARRAYOROBJECT              -> lpar APARAMS rpar | REPTARRAYSIZE
+    private boolean arrayOrObject() throws IOException {
+        if(getType() == Token.TokenType.PUNCTUATION_LPAREN){
+            if(match(Token.TokenType.PUNCTUATION_LPAREN) && aParams() && match(Token.TokenType.PUNCTUATION_RPAREN)){
+                return true;
+            } else {
+                return false;
+            }
+        } else if(getType() == Token.TokenType.PUNCTUATION_SEMICOLON){
+            return true;
+        } else if(getType() == Token.TokenType.PUNCTUATION_LBRACKET){
+            if(reptArraySize()){
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    // REPTARRAYSIZE              -> ARRAYSIZE REPTARRAYSIZE | EPSILON
+    private boolean reptArraySize() throws IOException {
+        if(getType() == Token.TokenType.PUNCTUATION_LBRACKET){
+            if(arraySize() && reptArraySize()){
+                return true;
+            } else {
+                return false;
+            }
+        } else if(getType() == Token.TokenType.PUNCTUATION_SEMICOLON){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }
