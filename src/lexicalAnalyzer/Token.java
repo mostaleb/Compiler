@@ -4,6 +4,10 @@ public class Token {
     //location is a string with 2 values seperated by a " "
     private String location;
 
+    public String getLocation() {
+        return location;
+    }
+
     public String getLexeme() {
         return lexeme;
     }

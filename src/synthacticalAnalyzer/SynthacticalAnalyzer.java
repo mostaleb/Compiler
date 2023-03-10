@@ -10,6 +10,7 @@ public class SynthacticalAnalyzer {
     private PrintWriter pwDerivation = new PrintWriter(new FileWriter("parser/example-polynomial.outderivation.src", true));
     private PrintWriter pwError = new PrintWriter(new FileWriter("parser/example-polynomial.outsyntaxerror.src", true));
     private String currentLHS = "";
+    private boolean inErrorRecovery = false;
     public SynthacticalAnalyzer(LexicalAnalyzer lexer) throws IOException {
         this.lexer = lexer;
         this.lookahead = lexer.nextToken();
@@ -17,16 +18,17 @@ public class SynthacticalAnalyzer {
     }
 
     private boolean match(Token.TokenType terminal) throws IOException {
-
-        if (getType() == terminal) {
-            write(Thread.currentThread().getStackTrace()[2].getMethodName(), terminal.getValue());
+        String signature = Thread.currentThread().getStackTrace()[2].getMethodName();
+        if(inErrorRecovery)
+            errorRecovery(signature, terminal.getValue());
+        else if (getType() == terminal) {
+            write(signature, terminal.getValue());
             skip();
-            return true;
         } else {
-            error(Thread.currentThread().getStackTrace()[2].getMethodName(), terminal.getValue());
-            skip();
-            return true;
+            errorRecovery(signature, terminal.getValue());
         }
+
+        return true;
     }
 
     private void write(String LHS, String RHS) {
@@ -40,8 +42,6 @@ public class SynthacticalAnalyzer {
     }
 
     private void skip() throws IOException {
-        if(lookahead.getLexeme().equals("="))
-            System.out.println("Sdsdf");
         lookahead = lexer.nextToken();
     }
 
@@ -49,7 +49,17 @@ public class SynthacticalAnalyzer {
         pwError.println(LHS + " -> " + RHS);
 
     }
+    private void errorRecovery(String signature, String terminal) throws IOException {
+        if(!inErrorRecovery){
+            inErrorRecovery = true;
+            error(currentLHS, "Expecting: " + terminal + " at: " + getLocation());
+        }
 
+        if(signature.equals(currentLHS))
+            lookahead = lexer.nextToken();
+        else
+            inErrorRecovery = false;
+    }
     public boolean parse() throws IOException {
         boolean start = start();
         pwDerivation.close();
@@ -61,7 +71,9 @@ public class SynthacticalAnalyzer {
     private Token.TokenType getType() {
         return lookahead.getType();
     }
-
+    private String getLocation(){
+        return lookahead.getLocation();
+    }
     private String getLexeme(){
         return lookahead.getLexeme();
     }
@@ -1255,6 +1267,4 @@ public class SynthacticalAnalyzer {
             return false;
         }
     }
-
-
 }
