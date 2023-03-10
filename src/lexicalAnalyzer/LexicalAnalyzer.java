@@ -31,9 +31,14 @@ public class LexicalAnalyzer {
 
 
     public Token nextToken() throws IOException {
+        tokenType = null;
+        lexeme = "";
         int intValue;
         while ((intValue = read.read()) != -1) {
             char c = (char) intValue;
+            if(c == 'i'){
+                System.out.println();
+            }
             if (c != ' ' && c != '\n' && c != '\r' && c != '\t')
                 lexeme += c;
             if (Character.isLetter(c)) {
@@ -216,7 +221,7 @@ public class LexicalAnalyzer {
               tokenType = Token.TokenType.UNKNOWN;
             } else {
                 positionCounter--;
-                read.unread(intValue);
+                read.unread(c);
                 break;
             }
 
