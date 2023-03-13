@@ -11,8 +11,19 @@ classDecl -> } ; class id
 optInherits -> isa
 classDecl -> {
 visibility -> private
+memberVarDecl -> attribute id : ;
+visibility -> private
 memberVarDecl -> attribute id :
-classDecl -> class {
+Type -> float
+memberVarDecl -> ;
+visibility -> public
+memberFuncHead -> constructor : (
+fParams -> id :
+Type -> float
+fParamsTail -> , id :
+Type -> float
+memberFuncHead -> )
+memberFuncDecl -> ;
 visibility -> public
 memberFuncHead -> function id : (
 fParams -> id :
@@ -21,11 +32,30 @@ memberFuncHead -> ) =>
 Type -> float
 memberFuncDecl -> ;
 classDecl -> } ; class id
-optInherits -> isa
+optInherits -> isa id
 classDecl -> {
 visibility -> private
 memberVarDecl -> attribute id :
-classDecl -> class {
+Type -> float
+memberVarDecl -> ;
+visibility -> private
+memberVarDecl -> attribute id :
+Type -> float
+memberVarDecl -> ;
+visibility -> private
+memberVarDecl -> attribute id :
+Type -> float
+memberVarDecl -> ;
+visibility -> public
+memberFuncHead -> constructor : (
+fParams -> id :
+Type -> float
+fParamsTail -> , id :
+Type -> float
+fParamsTail -> , id :
+Type -> float
+memberFuncHead -> )
+memberFuncDecl -> ;
 visibility -> public
 memberFuncHead -> function id : (
 fParams -> id :
@@ -33,8 +63,169 @@ Type -> float
 memberFuncHead -> ) =>
 Type -> float
 memberFuncDecl -> ;
-classDecl -> } ; class id
-optInherits -> isa
-classDecl -> {
-visibility -> private
-memberVarDecl -> attribute id :
+classDecl -> } ;
+funcHead -> function id
+funcHeadTail -> ::
+funcHeadMemberTail -> id (
+fParams -> id :
+Type -> float
+funcHeadMemberTail -> ) =>
+Type -> float
+funcBody -> {
+statement -> return (
+factor -> integer
+statement -> ) ;
+funcBody -> }
+funcHead -> function id
+funcHeadTail -> ::
+funcHeadMemberTail -> id (
+fParams -> id :
+Type -> float
+funcHeadMemberTail -> ) =>
+Type -> float
+funcBody -> {
+localVarDecl -> localvar id :
+Type -> float
+localVarDecl -> ;
+statement -> id
+assignOp -> =
+factor -> id
+statement -> ; id
+assignOp -> =
+factor -> id
+multOp -> *
+factor -> id
+addOp -> +
+factor -> id
+statement -> ; id
+assignOp -> =
+factor -> id
+multOp -> *
+factor -> id
+addOp -> +
+factor -> id
+statement -> ; return (
+factor -> id
+statement -> ) ;
+funcBody -> }
+funcHead -> function id
+funcHeadTail -> ::
+funcHeadMemberTail -> constructor (
+fParams -> id :
+Type -> float
+fParamsTail -> , id :
+Type -> float
+fParamsTail -> , id :
+Type -> float
+funcHeadMemberTail -> )
+funcBody -> {
+statement -> id
+statementIdnest -> . id
+assignOp -> =
+factor -> id
+statement -> ; id
+statementIdnest -> . id
+assignOp -> =
+factor -> id
+statement -> ; id
+statementIdnest -> . id
+assignOp -> =
+factor -> id
+statement -> ;
+funcBody -> }
+funcHead -> function id
+funcHeadTail -> ::
+funcHeadMemberTail -> constructor (
+fParams -> id :
+Type -> float
+fParamsTail -> , id :
+Type -> float
+funcHeadMemberTail -> )
+funcBody -> {
+statement -> id
+statementIdnest -> . id
+assignOp -> =
+factor -> id
+statement -> ; id
+statementIdnest -> . id
+assignOp -> =
+factor -> id
+statement -> ;
+funcBody -> }
+funcHead -> function id
+funcHeadTail -> ::
+funcHeadMemberTail -> id (
+fParams -> id :
+Type -> float
+funcHeadMemberTail -> ) =>
+Type -> float
+funcBody -> {
+localVarDecl -> localvar id :
+Type -> float
+localVarDecl -> ;
+statement -> id
+assignOp -> =
+factor -> float
+statement -> ; id
+assignOp -> =
+factor -> id
+multOp -> *
+factor -> id
+addOp -> +
+factor -> id
+statement -> ; return (
+factor -> id
+statement -> ) ;
+funcBody -> }
+funcHead -> function id
+funcHeadTail -> ( ) =>
+returnType -> void
+funcBody -> {
+localVarDecl -> localvar id :
+Type -> id
+arrayOrObject -> (
+factor -> integer
+aParamsTail -> ,
+factor -> float
+arrayOrObject -> )
+localVarDecl -> ; localvar id :
+Type -> id
+arrayOrObject -> (
+sign -> -
+factor -> float
+aParamsTail -> ,
+factor -> float
+aParamsTail -> ,
+factor -> float
+arrayOrObject -> )
+localVarDecl -> ; localvar id :
+Type -> integer
+localVarDecl -> ;
+statement -> id
+assignOp -> =
+factor -> integer
+statement -> ; while (
+factor -> id
+relOp -> <=
+factor -> integer
+statement -> )
+statBlock -> {
+statement -> write (
+factor -> id
+statement -> ) ; write (
+factor -> id
+idnest -> . id
+idnest2 -> (
+factor -> id
+idnest2 -> )
+statement -> ) ; write (
+factor -> id
+idnest -> . id
+idnest2 -> (
+factor -> id
+idnest2 -> )
+statement -> ) ;
+statBlock -> }
+statement -> ;
+funcBody -> }
+start -> eof

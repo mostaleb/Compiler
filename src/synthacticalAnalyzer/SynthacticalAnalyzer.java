@@ -12,6 +12,7 @@ public class SynthacticalAnalyzer {
     private PrintWriter pwError = new PrintWriter(new FileWriter("parser/example-polynomial.outsyntaxerror.src", true));
     private String currentLHS = "";
     private ArrayList<String> LHSInError = new ArrayList<String>();
+    private String missingStatementMessage = "Missing Statement expected";
     private boolean inErrorRecovery = false;
     public SynthacticalAnalyzer(LexicalAnalyzer lexer) throws IOException {
         this.lexer = lexer;
@@ -65,6 +66,9 @@ public class SynthacticalAnalyzer {
         }
 
     }
+    private String funcName(){
+        return Thread.currentThread().getStackTrace()[2].getMethodName();
+    }
     public boolean parse() throws IOException {
         boolean start = start();
         pwDerivation.close();
@@ -104,7 +108,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -118,7 +123,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -132,7 +138,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -146,7 +153,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -164,7 +172,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_RCURLY) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     //LOCALVARORSTAT             -> STATEMENT | LOCALVARDECL
@@ -185,7 +194,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -244,7 +254,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -282,7 +293,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -299,7 +311,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_SEMICOLON) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     
@@ -321,7 +334,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -335,7 +349,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     //IDNEST2                    -> lpar APARAMS rpar | REPTIDNEST1
@@ -360,7 +375,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     // REPTIDNEST1                -> INDICE REPTIDNEST1 | EPSILON
@@ -381,7 +397,8 @@ public class SynthacticalAnalyzer {
         || getType() == Token.TokenType.OPERATOR_MULT || getType() == Token.TokenType.PUNCTUATION_DOT || getType() == Token.TokenType.OPERATOR_ASSIGN) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -397,7 +414,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -411,7 +429,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -446,7 +465,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -462,7 +482,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -488,7 +509,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.RESERVED_ELSE || getType() == Token.TokenType.PUNCTUATION_SEMICOLON) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -505,7 +527,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_RCURLY) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     //LOCALVARDECL               -> localvar id colon TYPE ARRAYOROBJECT semi
@@ -519,7 +542,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -538,7 +562,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_RPAREN) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -555,7 +580,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -573,7 +599,8 @@ public class SynthacticalAnalyzer {
                 || getType() == Token.TokenType.PUNCTUATION_SEMICOLON) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -622,7 +649,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -639,7 +667,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     //RIGHTRECARITHEXPR          -> ADDOP TERM RIGHTRECARITHEXPR
@@ -658,7 +687,8 @@ public class SynthacticalAnalyzer {
                 || getType() == Token.TokenType.OPERATOR_LT || getType() == Token.TokenType.OPERATOR_NE || getType() == Token.TokenType.PUNCTUATION_RBRACKET) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -686,7 +716,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -702,7 +733,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -756,7 +788,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -777,7 +810,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -796,7 +830,8 @@ public class SynthacticalAnalyzer {
                 || getType() == Token.TokenType.RESERVED_OR || getType() == Token.TokenType.OPERATOR_PLUS) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -823,7 +858,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -845,7 +881,8 @@ public class SynthacticalAnalyzer {
             return true;
 
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     //MULTOP                     -> and | div | mult
@@ -872,7 +909,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     //REPTAPARAMS1               -> APARAMSTAIL REPTAPARAMS1 | EPSILON
@@ -887,7 +925,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_RPAREN) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -901,7 +940,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -923,7 +963,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -946,7 +987,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -961,7 +1003,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -977,7 +1020,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_LCURLY) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -993,7 +1037,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_LCURLY) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     //REPTMEMBERDECL             -> VISIBILITY MEMBERDECL REPTMEMBERDECL | EPSILON
@@ -1008,7 +1053,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_RCURLY) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -1029,7 +1075,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     //MEMBERDECL                 -> MEMBERVARDECL | MEMBERFUNCDECL
@@ -1049,7 +1096,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     //MEMBERFUNCDECL             -> MEMBERFUNCHEAD semi
@@ -1062,7 +1110,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     //MEMBERFUNCHEAD             -> function id colon lpar FPARAMS rpar arrow RETURNTYPE
@@ -1086,7 +1135,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     //FPARAMS                    -> id colon TYPE REPTFPARAMS3 REPTFPARAMS4 | EPSILON
@@ -1101,7 +1151,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_RPAREN) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     //REPTFPARAMS3               -> ARRAYSIZE REPTFPARAMS3 | EPSILON
@@ -1116,7 +1167,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_RPAREN || getType() == Token.TokenType.PUNCTUATION_COMMA) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     //REPTFPARAMS4               -> FPARAMSTAIL REPTFPARAMS4 | EPSILON
@@ -1131,7 +1183,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_RPAREN) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -1146,7 +1199,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     //REPTFPARAMSTAIL4           -> ARRAYSIZE REPTFPARAMSTAIL4 | EPSILON
@@ -1161,7 +1215,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_RPAREN || getType() == Token.TokenType.PUNCTUATION_COMMA) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -1182,7 +1237,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -1197,7 +1253,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -1225,7 +1282,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -1240,7 +1298,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -1261,7 +1320,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -1284,7 +1344,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -1300,7 +1361,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_SEMICOLON) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -1315,7 +1377,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     
@@ -1331,7 +1394,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.EOF) {
             return true;
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -1347,7 +1411,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_RPAREN) {
             return true;
         } else{
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
     
@@ -1361,7 +1426,8 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 
@@ -1382,7 +1448,8 @@ public class SynthacticalAnalyzer {
                return false;
            }
         } else {
-            return false;
+            error(funcName(), missingStatementMessage);
+            return true;
         }
     }
 }

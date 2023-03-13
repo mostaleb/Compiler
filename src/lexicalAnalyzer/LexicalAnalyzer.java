@@ -36,9 +36,6 @@ public class LexicalAnalyzer {
         int intValue;
         while ((intValue = read.read()) != -1) {
             char c = (char) intValue;
-            if(c == 'i'){
-                System.out.println();
-            }
             if (c != ' ' && c != '\n' && c != '\r' && c != '\t')
                 lexeme += c;
             if (Character.isLetter(c)) {
@@ -191,9 +188,9 @@ public class LexicalAnalyzer {
             tokenType = Token.TokenType.RESERVED_PUBLIC;
         } else if (lexeme.equals("private")) {
             tokenType = Token.TokenType.RESERVED_PRIVATE;
-        } else if (lexeme.equals("self")) {
+        }/* else if (lexeme.equals("self")) {
             tokenType = Token.TokenType.RESERVED_SELF;
-        } else if (lexeme.equals("read")) {
+        } */else if (lexeme.equals("read")) {
             tokenType = Token.TokenType.RESERVED_READ;
         } else {
             tokenType = Token.TokenType.ID;
@@ -464,7 +461,7 @@ public class LexicalAnalyzer {
 
         if (c == ':') {
             lexeme += c;
-            tokenType = Token.TokenType.OPERATOR_SIGNATURE;
+            tokenType = Token.TokenType.SCOPE_RESOLUTION;
         } else {
             positionCounter--;
             read.unread(c);

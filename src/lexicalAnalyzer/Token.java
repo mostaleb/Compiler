@@ -75,7 +75,7 @@ public class Token {
         PUNCTUATION_LBRACKET("["),
         OPERATOR_GE(">="),
         PUNCTUATION_RBRACKET("]"),
-        OPERATOR_SIGNATURE("::"),//This name might change as it has different names in different languages
+        SCOPE_RESOLUTION("::"),//This name might change as it has different names in different languages
         RESERVED_ISA("isa"),
         RESERVED_WRITE("write"),
         RESERVED_PUBLIC("public"),
@@ -85,7 +85,6 @@ public class Token {
         RESERVED_READ("read"),
         COMMENT_BLOCK("/**/"),
         COMMENT_INLINE("//"),
-        SCOPE_RESOLUTION("sr"),
         UNKNOWN("ukn"),
         EOF("eof");
 
