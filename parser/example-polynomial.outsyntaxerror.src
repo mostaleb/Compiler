@@ -1,0 +1,6 @@
+classDecl -> Expecting: id at: 2
+optInherits -> Expecting: id at: 6
+classDecl -> Expecting: id at: 2
+optInherits -> Expecting: id at: 6
+classDecl -> Expecting: id at: 2
+optInherits -> Expecting: id at: 6

@@ -1,4 +1,40 @@
 
-classDecl -> class
-classDecl -> class
-classDecl -> class
+classDecl -> class {
+visibility -> public
+memberFuncHead -> function id : (
+fParams -> id :
+Type -> float
+memberFuncHead -> ) =>
+Type -> float
+memberFuncDecl -> ;
+classDecl -> } ; class id
+optInherits -> isa
+classDecl -> {
+visibility -> private
+memberVarDecl -> attribute id :
+classDecl -> class {
+visibility -> public
+memberFuncHead -> function id : (
+fParams -> id :
+Type -> float
+memberFuncHead -> ) =>
+Type -> float
+memberFuncDecl -> ;
+classDecl -> } ; class id
+optInherits -> isa
+classDecl -> {
+visibility -> private
+memberVarDecl -> attribute id :
+classDecl -> class {
+visibility -> public
+memberFuncHead -> function id : (
+fParams -> id :
+Type -> float
+memberFuncHead -> ) =>
+Type -> float
+memberFuncDecl -> ;
+classDecl -> } ; class id
+optInherits -> isa
+classDecl -> {
+visibility -> private
+memberVarDecl -> attribute id :
