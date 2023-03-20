@@ -1,9 +1,12 @@
 package synthacticalAnalyzer;
+import AST.ASTNode;
+import AST.SemanticActions;
 import lexicalAnalyzer.LexicalAnalyzer;
 import lexicalAnalyzer.Token;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class SynthacticalAnalyzer {
     private Token lookahead;
@@ -14,6 +17,7 @@ public class SynthacticalAnalyzer {
     private ArrayList<String> LHSInError = new ArrayList<String>();
     private String missingStatementMessage = "Missing Statement expected";
     private boolean inErrorRecovery = false;
+    private SemanticActions semanticActions = new SemanticActions(new Stack<ASTNode>());
     public SynthacticalAnalyzer(LexicalAnalyzer lexer) throws IOException {
         this.lexer = lexer;
         this.lookahead = lexer.nextToken();
@@ -28,6 +32,14 @@ public class SynthacticalAnalyzer {
             inErrorRecovery = true;
 
         if(getType() == terminal){
+            if(signature.equals("classDecl") && getType() == Token.TokenType.ID) {
+                semanticActions.createId(lookahead);
+                semanticActions.createEpsilon(null);
+            } else if(signature.equals("visibility")){
+              semanticActions.createVisibility(lookahead);
+            } else {
+                semanticActions.createId(lookahead);
+            }
             write(signature, terminal.getValue());
             skip();
         } else if (inErrorRecovery && LHSInError.contains(signature)) {
@@ -69,7 +81,9 @@ public class SynthacticalAnalyzer {
     private String funcName(){
         return Thread.currentThread().getStackTrace()[2].getMethodName();
     }
+
     public boolean parse() throws IOException {
+
         boolean start = start();
         pwDerivation.close();
         pwError.close();
@@ -88,7 +102,11 @@ public class SynthacticalAnalyzer {
     }
     //START                      -> PROG eof
     private boolean start() throws IOException {
-        return prog() && match(Token.TokenType.EOF);
+        if(prog() && match(Token.TokenType.EOF)){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //CLASSDECLORFUNCDEF         -> FUNCDEF | CLASSDECL
@@ -102,6 +120,22 @@ public class SynthacticalAnalyzer {
             }
         } else if (getType() == Token.TokenType.RESERVED_FUNCTION) {
             if(funcDef() || inErrorRecovery){
+                inErrorRecovery = false;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            error(funcName(), missingStatementMessage);
+            return true;
+        }
+    }
+
+    //CLASSDECL                  -> class id OPTINHERITS lcurbr REPTMEMBERDECL rcurbr semi
+    private boolean classDecl() throws IOException {
+        if (getType() == Token.TokenType.RESERVED_CLASS) {
+            if (match(Token.TokenType.RESERVED_CLASS) && match(Token.TokenType.ID) && optInherits() && match(Token.TokenType.PUNCTUATION_LCURLY)
+                    && reptMemberDecl() && match(Token.TokenType.PUNCTUATION_RCURLY) && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -992,21 +1026,7 @@ public class SynthacticalAnalyzer {
         }
     }
 
-    //CLASSDECL                  -> class id OPTINHERITS lcurbr REPTMEMBERDECL rcurbr semi
-    private boolean classDecl() throws IOException {
-        if (getType() == Token.TokenType.RESERVED_CLASS) {
-            if (match(Token.TokenType.RESERVED_CLASS) && match(Token.TokenType.ID) && optInherits() && match(Token.TokenType.PUNCTUATION_LCURLY)
-                    && reptMemberDecl() && match(Token.TokenType.PUNCTUATION_RCURLY) && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
-                inErrorRecovery = false;
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            error(funcName(), missingStatementMessage);
-            return true;
-        }
-    }
+
 
     // OPTINHERITS                -> isa id REPTINHERITSLIST | EPSILON
     private boolean optInherits() throws IOException {
@@ -1018,6 +1038,7 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else if (getType() == Token.TokenType.PUNCTUATION_LCURLY) {
+            semanticActions.createInheritList();
             return true;
         } else {
             error(funcName(), missingStatementMessage);
@@ -1043,6 +1064,7 @@ public class SynthacticalAnalyzer {
     }
     //REPTMEMBERDECL             -> VISIBILITY MEMBERDECL REPTMEMBERDECL | EPSILON
     private boolean reptMemberDecl() throws IOException {
+        semanticActions.createEpsilon(null);
         if (getType() == Token.TokenType.RESERVED_PRIVATE || getType() == Token.TokenType.RESERVED_PUBLIC) {
             if (visibility() && memberDecl() && reptMemberDecl() || inErrorRecovery) {
                 inErrorRecovery = false;
@@ -1368,9 +1390,11 @@ public class SynthacticalAnalyzer {
 
     //PROG                       -> REPTPROG0
     private boolean prog() throws IOException {
+        semanticActions.createEpsilon(null);
         if(getType() == Token.TokenType.RESERVED_FUNCTION || getType() == Token.TokenType.RESERVED_CLASS
         || getType() == Token.TokenType.EOF){
             if (reptProg0() || inErrorRecovery) {
+                semanticActions.createRoot();
                 inErrorRecovery = false;
                 return true;
             } else {
