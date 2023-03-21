@@ -37,6 +37,12 @@ public class SynthacticalAnalyzer {
                 semanticActions.createEpsilon(null);
             } else if(signature.equals("visibility")){
               semanticActions.createVisibility(lookahead);
+            } else if (signature.equals("funcHeadMemberTail") && getType() == Token.TokenType.RESERVED_CONSTRUCTOR) {
+                semanticActions.createScope(lookahead);
+            } else if (signature.equals("funcBody") && getType() == Token.TokenType.PUNCTUATION_LCURLY) {
+                semanticActions.createEpsilon(null);
+            } else if (signature.equals("arrayOrObject") && getType() == Token.TokenType.PUNCTUATION_LPAREN) {
+                semanticActions.createEpsilon(null);
             } else {
                 semanticActions.createId(lookahead);
             }
@@ -164,6 +170,7 @@ public class SynthacticalAnalyzer {
 
     //FUNCHEAD                   -> function id FUNCHEADTAIL
     private boolean funcHead() throws IOException {
+        semanticActions.createEpsilon(null);
         if (getType() == Token.TokenType.RESERVED_FUNCTION) {
             if (match(Token.TokenType.RESERVED_FUNCTION) && match(Token.TokenType.ID) && funcHeadTail() || inErrorRecovery) {
                 inErrorRecovery = false;
@@ -181,6 +188,7 @@ public class SynthacticalAnalyzer {
     private boolean funcBody() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LCURLY) {
             if (match(Token.TokenType.PUNCTUATION_LCURLY) && reptLocalVarOrStat() && match(Token.TokenType.PUNCTUATION_RCURLY) || inErrorRecovery) {
+                semanticActions.createFuncBodyList();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -569,7 +577,9 @@ public class SynthacticalAnalyzer {
     private boolean localVarDecl() throws IOException {
         if (getType() == Token.TokenType.RESERVED_LOCALVAR) {
             if (match(Token.TokenType.RESERVED_LOCALVAR) && match(Token.TokenType.ID) && match(Token.TokenType.PUNCTUATION_COLON) && Type()
+                   && semanticActionsLocalVarDeclType()
                    && arrayOrObject() && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+                semanticActions.createVarDecl();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -579,6 +589,11 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsLocalVarDeclType() {
+        semanticActions.createType(lookahead);
+        return true;
     }
 
     //APARAMS                    -> EXPR REPTAPARAMS1 | EPSILON
@@ -780,7 +795,8 @@ public class SynthacticalAnalyzer {
     //                               | SIGN FACTOR
     private boolean factor() throws IOException {
         if (getType() == Token.TokenType.OPERATOR_PLUS || getType() == Token.TokenType.OPERATOR_MINUS) {
-            if (sign() && factor() || inErrorRecovery) {
+            if (sign() && semanticActionsFactorSign() && factor() || inErrorRecovery) {
+                semanticActions.createSign(lookahead);
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -795,6 +811,7 @@ public class SynthacticalAnalyzer {
             }
         } else if (getType() == Token.TokenType.RESERVED_NOT) {
             if (match(Token.TokenType.RESERVED_NOT) && factor() || inErrorRecovery) {
+                semanticActions.createNot();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -802,6 +819,7 @@ public class SynthacticalAnalyzer {
             }
         } else if (getType() == Token.TokenType.INTEGER) {
             if (match(Token.TokenType.INTEGER) || inErrorRecovery) {
+                semanticActions.createNumber(lookahead);
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -809,6 +827,7 @@ public class SynthacticalAnalyzer {
             }
         } else if (getType() == Token.TokenType.FLOAT) {
             if (match(Token.TokenType.FLOAT) || inErrorRecovery) {
+                semanticActions.createNumber(lookahead);
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -825,6 +844,11 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsFactorSign() {
+        semanticActions.createSignVal(lookahead);
+        return true;
     }
 
     //SIGN                       -> minus | plus
@@ -902,7 +926,7 @@ public class SynthacticalAnalyzer {
     //follow: rpar, comma, semi, eq, geq, gt, leq, lt, neq, rsqbr, minus, or, plus
     private boolean rightRecTerm() throws IOException {
         if (getType() == Token.TokenType.OPERATOR_MULT || getType() == Token.TokenType.OPERATOR_DIV || getType() == Token.TokenType.RESERVED_AND) {
-            if (multOp() && factor() && rightRecTerm() || inErrorRecovery) {
+            if (multOp() && semanticActionsRightRecTermMultOp() && factor() && semanticActionsRightRecTermFactor() &&rightRecTerm() || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -919,6 +943,17 @@ public class SynthacticalAnalyzer {
             return true;
         }
     }
+
+    private boolean semanticActionsRightRecTermFactor() {
+        semanticActions.createMultOp(lookahead);
+        return true;
+    }
+
+    private boolean semanticActionsRightRecTermMultOp() {
+        semanticActions.createMult(lookahead);
+        return true;
+    }
+
     //MULTOP                     -> and | div | mult
     private boolean multOp() throws IOException {
         if (getType() == Token.TokenType.RESERVED_AND) {
@@ -991,6 +1026,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_LPAREN) {
             if (match(Token.TokenType.PUNCTUATION_LPAREN) && fParams() && match(Token.TokenType.PUNCTUATION_RPAREN)
                     && match(Token.TokenType.OPERATOR_ARROW) && returnType() || inErrorRecovery) {
+                semanticActions.createReturnType(lookahead);
+                semanticActions.createFuncHead();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1007,6 +1044,7 @@ public class SynthacticalAnalyzer {
         if (getType() == Token.TokenType.RESERVED_CONSTRUCTOR) {
             if (match(Token.TokenType.RESERVED_CONSTRUCTOR) && match(Token.TokenType.PUNCTUATION_LPAREN) && fParams()
                     && match(Token.TokenType.PUNCTUATION_RPAREN) || inErrorRecovery) {
+                semanticActions.createFuncHead();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1015,6 +1053,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.ID) {
             if (match(Token.TokenType.ID) && match(Token.TokenType.PUNCTUATION_LPAREN) && fParams() && match(Token.TokenType.PUNCTUATION_RPAREN)
                     && match(Token.TokenType.OPERATOR_ARROW) && returnType() || inErrorRecovery) {
+                semanticActions.createReturnType(lookahead);
+                semanticActions.createFuncHead();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1163,8 +1203,10 @@ public class SynthacticalAnalyzer {
     }
     //FPARAMS                    -> id colon TYPE REPTFPARAMS3 REPTFPARAMS4 | EPSILON
     private boolean fParams() throws IOException {
+        semanticActions.createEpsilon(null);
         if (getType() == Token.TokenType.ID) {
-            if (match(Token.TokenType.ID) && match(Token.TokenType.PUNCTUATION_COLON) && Type() && reptFParams3() && reptFParams4() || inErrorRecovery) {
+            if (match(Token.TokenType.ID) && match(Token.TokenType.PUNCTUATION_COLON) && Type() && semanticActionsfParamsType() && reptFParams3() && semanticActionsfParamsReptfParams3() && reptFParams4() || inErrorRecovery) {
+                semanticActions.createFParamsList();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1177,6 +1219,19 @@ public class SynthacticalAnalyzer {
             return true;
         }
     }
+
+    private boolean semanticActionsfParamsReptfParams3() {
+        semanticActions.createDimList();
+        semanticActions.createFParam();
+        return true;
+    }
+
+    private boolean semanticActionsfParamsType() {
+        semanticActions.createType(lookahead);
+        semanticActions.createEpsilon(null);
+        return true;
+    }
+
     //REPTFPARAMS3               -> ARRAYSIZE REPTFPARAMS3 | EPSILON
     private boolean reptFParams3() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LBRACKET) {
@@ -1350,7 +1405,7 @@ public class SynthacticalAnalyzer {
     //ARRAYOROBJECT              -> lpar APARAMS rpar | REPTARRAYSIZE
     private boolean arrayOrObject() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LPAREN) {
-            if (match(Token.TokenType.PUNCTUATION_LPAREN) && aParams() && match(Token.TokenType.PUNCTUATION_RPAREN) || inErrorRecovery) {
+            if (match(Token.TokenType.PUNCTUATION_LPAREN) && aParams() && semanticActionsArrayOrObjectAParams() && match(Token.TokenType.PUNCTUATION_RPAREN) || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1359,7 +1414,9 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.PUNCTUATION_SEMICOLON) {
             return true;
         } else if (getType() == Token.TokenType.PUNCTUATION_LBRACKET) {
+            semanticActions.createEpsilon(null);
             if (reptArraySize() || inErrorRecovery) {
+                semanticActions.createDimList();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1369,6 +1426,11 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsArrayOrObjectAParams() {
+        semanticActions.createAParams();
+        return true;
     }
 
     // REPTARRAYSIZE              -> ARRAYSIZE REPTARRAYSIZE | EPSILON

@@ -225,6 +225,10 @@ public class SemanticActions {
     public void createFuncHead() {
         astStack.push(createSubtree("funcHead", null, popUntilEpsilon()));
     }
+
+    public void migrateToFuncDef(){
+        astStack.push(createSubtree("funcDef", null, pop()));
+    }
 }
 
 
