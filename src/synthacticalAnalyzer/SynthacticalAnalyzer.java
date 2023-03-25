@@ -140,8 +140,10 @@ public class SynthacticalAnalyzer {
     //CLASSDECL                  -> class id OPTINHERITS lcurbr REPTMEMBERDECL rcurbr semi
     private boolean classDecl() throws IOException {
         if (getType() == Token.TokenType.RESERVED_CLASS) {
-            if (match(Token.TokenType.RESERVED_CLASS) && match(Token.TokenType.ID) && optInherits() && match(Token.TokenType.PUNCTUATION_LCURLY)
-                    && reptMemberDecl() && match(Token.TokenType.PUNCTUATION_RCURLY) && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+            if (match(Token.TokenType.RESERVED_CLASS) && match(Token.TokenType.ID) && semanticActionsClassDeclId() && optInherits() 
+                    && semanticActionsClassDeclOptInherits() && match(Token.TokenType.PUNCTUATION_LCURLY) && semanticActionsClassDeclLcurly()
+                    && reptMemberDecl() && semanticActionsClassDeclReptMemberDecl() && match(Token.TokenType.PUNCTUATION_RCURLY) && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+                semanticActions.createClassDecl();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -151,6 +153,26 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsClassDeclReptMemberDecl() {
+        semanticActions.createMemberDeclList();
+        return true;
+    }
+
+    private boolean semanticActionsClassDeclLcurly() {
+        semanticActions.createEpsilon(null);
+        return true;
+    }
+
+    private boolean semanticActionsClassDeclOptInherits() {
+        semanticActions.createInheritList();
+        return true;
+    }
+
+    private boolean semanticActionsClassDeclId() {
+        semanticActions.createEpsilon(null);
+        return true;
     }
 
     //FUNCDEF                    -> FUNCHEAD FUNCBODY
@@ -258,6 +280,7 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.RESERVED_WRITE) {
             if (match(Token.TokenType.RESERVED_WRITE) && match(Token.TokenType.PUNCTUATION_LPAREN) && expr() && match(Token.TokenType.PUNCTUATION_RPAREN)
                     && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+                semanticActions.createWhileStmt();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -265,7 +288,8 @@ public class SynthacticalAnalyzer {
             }
         } else if (getType() == Token.TokenType.RESERVED_WHILE) {
             if (match(Token.TokenType.RESERVED_WHILE) && match(Token.TokenType.PUNCTUATION_LPAREN) && relExpr() && match(Token.TokenType.PUNCTUATION_RPAREN)
-                    && statBlock() && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+                    && semanticActionsStatementRparen() && statBlock() && semanticActionsStatementStatBlock() && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+                semanticActions.createWhileStmt();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -274,6 +298,7 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.RESERVED_RETURN) {
             if (match(Token.TokenType.RESERVED_RETURN) && match(Token.TokenType.PUNCTUATION_LPAREN) && expr() && match(Token.TokenType.PUNCTUATION_RPAREN)
                   && statBlock() && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+                semanticActions.createReturnStmt();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -282,6 +307,7 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.RESERVED_READ) {
             if (match(Token.TokenType.RESERVED_READ) && match(Token.TokenType.PUNCTUATION_LPAREN) && variable() && match(Token.TokenType.PUNCTUATION_RPAREN)
                     && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+                semanticActions.createReadStmt();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -289,7 +315,8 @@ public class SynthacticalAnalyzer {
             }
         } else if (getType() == Token.TokenType.RESERVED_IF) {
             if (match(Token.TokenType.RESERVED_IF) && match(Token.TokenType.PUNCTUATION_LPAREN) && relExpr() && match(Token.TokenType.PUNCTUATION_RPAREN)
-                    && match(Token.TokenType.RESERVED_THEN) && statBlock() && match(Token.TokenType.RESERVED_ELSE) && statBlock() && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+                    && match(Token.TokenType.RESERVED_THEN) && semanticActionsStatementThen() && statBlock() && semanticActionsStatementStatBlock() && match(Token.TokenType.RESERVED_ELSE) && semanticActionsStatementElse() && statBlock() && semanticActionsStatementStatBlock() && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+                semanticActions.createIfStmt();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -299,6 +326,26 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsStatementRparen() {
+        semanticActions.createEpsilon(null);
+        return true;
+    }
+
+    private boolean semanticActionsStatementElse() {
+        semanticActions.createEpsilon(null);
+        return true;
+    }
+
+    private boolean semanticActionsStatementStatBlock() {
+        semanticActions.createStatBlock();
+        return true;
+    }
+
+    private boolean semanticActionsStatementThen() {
+        semanticActions.createEpsilon(null);
+        return true;
     }
 
     // STATEMENTIDNEST            -> lpar APARAMS rpar STATEMENTIDNEST2
@@ -307,7 +354,7 @@ public class SynthacticalAnalyzer {
     //                               | INDICE REPTIDNEST1 STATEMENTIDNEST3
     private boolean statementIdnest() throws IOException {
         if(getType() == Token.TokenType.PUNCTUATION_LBRACKET){
-            if(indice() && reptIdnest1() && statementIdnest3() || inErrorRecovery){
+            if(semanticActionsStatementIdnestIndice() && reptIdnest1() && semanticActionsStatementIdnestReptIdnest1() && statementIdnest3() || inErrorRecovery){
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -315,6 +362,7 @@ public class SynthacticalAnalyzer {
             }
         } else if (getType() == Token.TokenType.OPERATOR_ASSIGN) {
             if(assignOp() && expr() || inErrorRecovery){
+                semanticActions.createAssignStmt();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -322,13 +370,14 @@ public class SynthacticalAnalyzer {
             }
         } else if (getType() == Token.TokenType.PUNCTUATION_DOT) {
             if (match(Token.TokenType.PUNCTUATION_DOT) && match(Token.TokenType.ID) && statementIdnest() || inErrorRecovery){
+                semanticActions.createDot();
                 inErrorRecovery = false;
                 return true;
             } else {
                 return false;
             }
         } else if (getType() == Token.TokenType.PUNCTUATION_LPAREN) {
-            if(match(Token.TokenType.PUNCTUATION_LPAREN) && aParams() && match(Token.TokenType.PUNCTUATION_RPAREN) && statementIdnest2() || inErrorRecovery){
+            if(match(Token.TokenType.PUNCTUATION_LPAREN) && semanticActionsStatementIdnestLparen() && aParams() && semanticActionsStatementIdnestAParams() && match(Token.TokenType.PUNCTUATION_RPAREN) && statementIdnest2() || inErrorRecovery){
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -340,11 +389,34 @@ public class SynthacticalAnalyzer {
         }
     }
 
+    private boolean semanticActionsStatementIdnestReptIdnest1() {
+        semanticActions.createIndexList();
+        semanticActions.createDataMember();
+        return true;
+    }
+
+    private boolean semanticActionsStatementIdnestIndice() {
+        semanticActions.createEpsilon(null);
+        return true;
+    }
+
+    private boolean semanticActionsStatementIdnestAParams() {
+        semanticActions.createAParams();
+        semanticActions.createFuncCall();
+        return true;
+    }
+
+    private boolean semanticActionsStatementIdnestLparen() {
+        semanticActions.createEpsilon(null);
+        return true;
+    }
+
     //STATEMENTIDNEST2           -> dot id STATEMENTIDNEST
     //                               | EPSILON
     private boolean statementIdnest2() throws IOException {
         if(getType() == Token.TokenType.PUNCTUATION_DOT){
             if(match(Token.TokenType.PUNCTUATION_DOT) && match(Token.TokenType.ID) && statementIdnest() || inErrorRecovery){
+                semanticActions.createDot();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -363,6 +435,7 @@ public class SynthacticalAnalyzer {
     private boolean statementIdnest3() throws IOException {
         if(getType() == Token.TokenType.PUNCTUATION_DOT){
             if(match(Token.TokenType.PUNCTUATION_DOT) && match(Token.TokenType.ID) && statementIdnest() || inErrorRecovery){
+                semanticActions.createDot();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -385,6 +458,7 @@ public class SynthacticalAnalyzer {
     private boolean idnest() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_DOT) {
             if (match(Token.TokenType.PUNCTUATION_DOT) && match(Token.TokenType.ID) && idnest2() || inErrorRecovery) {
+                semanticActions.createDot();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -425,7 +499,7 @@ public class SynthacticalAnalyzer {
     //follow: rpar, comma, semi, eq, geq, gt, leq, lt, neq, rsqbr, minus, or, plus, and, div, mult, dot, equal
     private boolean reptIdnest1() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LBRACKET) {
-            if (indice() && reptIdnest1() || inErrorRecovery) {
+            if (reptIdnest1() || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -480,14 +554,17 @@ public class SynthacticalAnalyzer {
     //                               | REPTIDNEST1 REPTVARIABLE
     private boolean variable2() throws IOException {
         if(getType() == Token.TokenType.PUNCTUATION_LPAREN){
-            if (match(Token.TokenType.PUNCTUATION_LPAREN) && aParams() && match(Token.TokenType.PUNCTUATION_RPAREN) && varIdnest() || inErrorRecovery) {
+            if (match(Token.TokenType.PUNCTUATION_LPAREN) && semanticActionsVariable2Lparen() && aParams()
+                    && semanticActionsVariable2AParams() && match(Token.TokenType.PUNCTUATION_RPAREN) && varIdnest() || inErrorRecovery) {
+                semanticActions.createDot();
                 inErrorRecovery = false;
                 return true;
             } else{
                 return false;
             }
         } else if (getType() == Token.TokenType.PUNCTUATION_LBRACKET || getType() == Token.TokenType.PUNCTUATION_DOT || getType() == Token.TokenType.PUNCTUATION_RPAREN) {
-             if(reptIdnest1() && reptVariable() || inErrorRecovery){
+            semanticActions.createEpsilon(null);
+            if(reptIdnest1() && semanticActionsVariable2ReptIdnest1() && reptVariable() || inErrorRecovery){
                  inErrorRecovery = false;
                  return true;
              } else {
@@ -497,6 +574,23 @@ public class SynthacticalAnalyzer {
             return true;
         }
     }
+
+    private boolean semanticActionsVariable2AParams() {
+        semanticActions.createAParams();
+        return true;
+    }
+
+    private boolean semanticActionsVariable2Lparen() {
+        semanticActions.createEpsilon(null);
+        return true;
+    }
+
+    private boolean semanticActionsVariable2ReptIdnest1() {
+        semanticActions.createIndexList();
+        semanticActions.createDataMember();
+        return true;
+    }
+
     //INDICE                     -> lsqbr ARITHEXPR rsqbr
     private boolean indice() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LBRACKET) {
@@ -517,7 +611,8 @@ public class SynthacticalAnalyzer {
         if (getType() == Token.TokenType.PUNCTUATION_LPAREN || getType() == Token.TokenType.FLOAT || getType() == Token.TokenType.INTEGER
                 || getType() == Token.TokenType.RESERVED_NOT || getType() == Token.TokenType.ID || getType() == Token.TokenType.OPERATOR_PLUS
                 || getType() == Token.TokenType.OPERATOR_MINUS) {
-            if (arithExpr() && relOp() && arithExpr() || inErrorRecovery) {
+            if (arithExpr() && relOp() && semanticActionsRelExprRelOp() && arithExpr() || inErrorRecovery) {
+                semanticActions.createRelOp(lookahead);
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -527,6 +622,11 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsRelExprRelOp() {
+        semanticActions.createRel(lookahead);
+        return true;
     }
 
     // STATBLOCK                  -> lcurbr REPTSTATBLOCK1 rcurbr
@@ -638,7 +738,8 @@ public class SynthacticalAnalyzer {
     private boolean expr2() throws IOException {
         if (getType() == Token.TokenType.OPERATOR_EQ || getType() == Token.TokenType.OPERATOR_GT || getType() == Token.TokenType.OPERATOR_GE
                 || getType() == Token.TokenType.OPERATOR_LE || getType() == Token.TokenType.OPERATOR_LT || getType() == Token.TokenType.OPERATOR_NE) {
-            if (relOp() && arithExpr() || inErrorRecovery) {
+            if (relOp() && semanticActionsExpr2RelOp() && arithExpr() || inErrorRecovery) {
+                semanticActions.createRelOp(lookahead);
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -651,6 +752,11 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsExpr2RelOp() {
+        semanticActions.createRel(lookahead);
+        return true;
     }
 
     //RELOP                      -> eq | geq | gt | leq | lt | neq
@@ -725,7 +831,7 @@ public class SynthacticalAnalyzer {
     //follow: rpar, comma, semi, eq, geq, gt, leq, lt, neq, rsqbr
     private boolean rightRecArithExpr() throws IOException {
         if (getType() == Token.TokenType.OPERATOR_PLUS || getType() == Token.TokenType.OPERATOR_MINUS || getType() == Token.TokenType.RESERVED_OR) {
-            if (addOp() && term() && rightRecArithExpr() || inErrorRecovery) {
+            if (addOp() && semanticActionsRightRecArithExprAddOp() && term() && semanticActionsRightRecArithExprTerm() && rightRecArithExpr() || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -739,6 +845,16 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsRightRecArithExprTerm() {
+        semanticActions.createAddOp(lookahead);
+        return true;
+    }
+
+    private boolean semanticActionsRightRecArithExprAddOp() {
+        semanticActions.createAdd(lookahead);
+        return true;
     }
 
     //   ADDOP                      -> minus | or | plus
@@ -897,7 +1013,7 @@ public class SynthacticalAnalyzer {
     //follow: rpar, comma, semi, eq, geq, gt, leq, lt, neq, rsqbr, minus, or, plus, and, div, mult, dot
     private boolean factor2() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LPAREN) {
-            if (match(Token.TokenType.PUNCTUATION_LPAREN) && aParams() && match(Token.TokenType.PUNCTUATION_RPAREN) || inErrorRecovery) {
+            if (match(Token.TokenType.PUNCTUATION_LPAREN) && semanticActionsFactor2Lparen() && aParams() && semanticActionsFactor2AParams()&& match(Token.TokenType.PUNCTUATION_RPAREN) || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -909,7 +1025,10 @@ public class SynthacticalAnalyzer {
                 || getType() == Token.TokenType.OPERATOR_MINUS || getType() == Token.TokenType.RESERVED_OR || getType() == Token.TokenType.OPERATOR_PLUS || getType() == Token.TokenType.RESERVED_AND
                 || getType() == Token.TokenType.OPERATOR_DIV || getType() == Token.TokenType.OPERATOR_MULT || getType() == Token.TokenType.PUNCTUATION_DOT || getType() == Token.TokenType.OPERATOR_ASSIGN
                 || getType() == Token.TokenType.PUNCTUATION_LBRACKET) {
+            semanticActions.createEpsilon(null);
             if (reptIdnest1() || inErrorRecovery) {
+                semanticActions.createIndexList();
+                semanticActions.createDataMember();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -919,6 +1038,17 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsFactor2AParams() {
+        semanticActions.createAParams();
+        semanticActions.createFuncCall();
+        return true;
+    }
+
+    private boolean semanticActionsFactor2Lparen() {
+        semanticActions.createEpsilon(null);
+        return true;
     }
 
     //RIGHTRECTERM               -> MULTOP FACTOR RIGHTRECTERM
@@ -1106,7 +1236,7 @@ public class SynthacticalAnalyzer {
     private boolean reptMemberDecl() throws IOException {
         semanticActions.createEpsilon(null);
         if (getType() == Token.TokenType.RESERVED_PRIVATE || getType() == Token.TokenType.RESERVED_PUBLIC) {
-            if (visibility() && memberDecl() && reptMemberDecl() || inErrorRecovery) {
+            if (visibility() && semanticActionsReptMemberDeclVisibility() && memberDecl() && reptMemberDecl() || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1118,6 +1248,11 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsReptMemberDeclVisibility() {
+        semanticActions.createVisibility(lookahead);
+        return true;
     }
 
     //VISIBILITY                 -> private | public
@@ -1165,7 +1300,7 @@ public class SynthacticalAnalyzer {
     //MEMBERFUNCDECL             -> MEMBERFUNCHEAD semi
     private boolean memberFuncDecl() throws IOException {
         if (getType() == Token.TokenType.RESERVED_FUNCTION || getType() == Token.TokenType.RESERVED_CONSTRUCTOR) {
-            if (memberFuncHead() && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+            if (memberFuncHead() || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1181,7 +1316,8 @@ public class SynthacticalAnalyzer {
     private boolean memberFuncHead() throws IOException {
         if(getType() == Token.TokenType.RESERVED_CONSTRUCTOR){
             if(match(Token.TokenType.RESERVED_CONSTRUCTOR) && match(Token.TokenType.PUNCTUATION_COLON) && match(Token.TokenType.PUNCTUATION_LPAREN)
-            && fParams() && match(Token.TokenType.PUNCTUATION_RPAREN) || inErrorRecovery){
+            && fParams() && match(Token.TokenType.PUNCTUATION_RPAREN) && match(Token.TokenType.PUNCTUATION_SEMICOLON)|| inErrorRecovery){
+                semanticActions.createMembConstrDecl();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1190,7 +1326,8 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.RESERVED_FUNCTION) {
             if(match(Token.TokenType.RESERVED_FUNCTION) && match(Token.TokenType.ID) && match(Token.TokenType.PUNCTUATION_COLON)
             && match(Token.TokenType.PUNCTUATION_LPAREN) && fParams() && match(Token.TokenType.PUNCTUATION_RPAREN) && match(Token.TokenType.OPERATOR_ARROW)
-            && returnType() || inErrorRecovery){
+            && returnType() && semanticActionsMemberFuncHeadReturnType() && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery){
+                semanticActions.createMembFuncDecl();
                 inErrorRecovery = false;
                 return true;
             } else{
@@ -1201,6 +1338,12 @@ public class SynthacticalAnalyzer {
             return true;
         }
     }
+
+    private boolean semanticActionsMemberFuncHeadReturnType() {
+        semanticActions.createReturnType(lookahead);
+        return true;
+    }
+
     //FPARAMS                    -> id colon TYPE REPTFPARAMS3 REPTFPARAMS4 | EPSILON
     private boolean fParams() throws IOException {
         semanticActions.createEpsilon(null);
@@ -1252,6 +1395,8 @@ public class SynthacticalAnalyzer {
     private boolean reptFParams4() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_COMMA) {
             if (fParamsTail() && reptFParams4() || inErrorRecovery) {
+                semanticActions.createDimList();
+                semanticActions.createFParam();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1269,7 +1414,7 @@ public class SynthacticalAnalyzer {
     private boolean fParamsTail() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_COMMA) {
             if (match(Token.TokenType.PUNCTUATION_COMMA) && match(Token.TokenType.ID) && match(Token.TokenType.PUNCTUATION_COLON)
-                    && Type() && reptFParamsTail4() || inErrorRecovery) {
+                    && Type() && semanticActionsFParamsTailType() && reptFParamsTail4() || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1280,6 +1425,13 @@ public class SynthacticalAnalyzer {
             return true;
         }
     }
+
+    private boolean semanticActionsFParamsTailType() {
+        semanticActions.createType(lookahead);
+        semanticActions.createEpsilon(null);
+        return true;
+    }
+
     //REPTFPARAMSTAIL4           -> ARRAYSIZE REPTFPARAMSTAIL4 | EPSILON
     private boolean reptFParamsTail4() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LBRACKET) {
@@ -1323,7 +1475,8 @@ public class SynthacticalAnalyzer {
     private boolean memberVarDecl() throws IOException {
         if (getType() == Token.TokenType.RESERVED_ATTRIBUTE) {
             if (match(Token.TokenType.RESERVED_ATTRIBUTE) && match(Token.TokenType.ID) && match(Token.TokenType.PUNCTUATION_COLON)
-                    && Type() && reptArraySize() && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+                    && Type() && semanticActionsMemberVarDeclType() && reptArraySize() && semanticActionsMemberVarDeclReptArraySize() && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+                semanticActions.createMembVarDecl();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1333,6 +1486,17 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsMemberVarDeclReptArraySize() {
+        semanticActions.createDimList();
+        return true;
+    }
+
+    private boolean semanticActionsMemberVarDeclType() {
+        semanticActions.createType(lookahead);
+        semanticActions.createEpsilon(null);
+        return true;
     }
 
     //TYPE                       -> float | id | integer
@@ -1383,6 +1547,7 @@ public class SynthacticalAnalyzer {
     // ARRAYSIZE2                 -> intlit rsqbr | rsqbr
     private boolean arraySize2() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_RBRACKET) {
+            semanticActions.createDimEmpty(lookahead);
             if (match(Token.TokenType.PUNCTUATION_RBRACKET) || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
@@ -1390,7 +1555,7 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else if (getType() == Token.TokenType.INTEGER) {
-            if (match(Token.TokenType.INTEGER) && match(Token.TokenType.PUNCTUATION_RBRACKET) || inErrorRecovery) {
+            if (match(Token.TokenType.INTEGER) && semanticActionsArraySize2Integer() && match(Token.TokenType.PUNCTUATION_RBRACKET) || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1400,6 +1565,11 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsArraySize2Integer() {
+        semanticActions.createDim(lookahead);
+        return true;
     }
 
     //ARRAYOROBJECT              -> lpar APARAMS rpar | REPTARRAYSIZE
@@ -1455,6 +1625,7 @@ public class SynthacticalAnalyzer {
         semanticActions.createEpsilon(null);
         if(getType() == Token.TokenType.RESERVED_FUNCTION || getType() == Token.TokenType.RESERVED_CLASS
         || getType() == Token.TokenType.EOF){
+            semanticActions.createEpsilon(lookahead);
             if (reptProg0() || inErrorRecovery) {
                 semanticActions.createRoot();
                 inErrorRecovery = false;
@@ -1505,7 +1676,9 @@ public class SynthacticalAnalyzer {
     // VARIDNEST                  -> dot id VARIDNEST2
     private boolean varIdnest() throws IOException {
         if(getType() == Token.TokenType.PUNCTUATION_DOT){
+            semanticActions.createFuncCall();
             if(match(Token.TokenType.PUNCTUATION_DOT) && match(Token.TokenType.ID) && varIdnest2() || inErrorRecovery){
+                semanticActions.createDot();
                 inErrorRecovery = false;
                 return true;
             } else {
