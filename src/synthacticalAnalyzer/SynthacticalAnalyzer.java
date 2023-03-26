@@ -17,7 +17,8 @@ public class SynthacticalAnalyzer {
     private ArrayList<String> LHSInError = new ArrayList<String>();
     private String missingStatementMessage = "Missing Statement expected";
     private boolean inErrorRecovery = false;
-    private SemanticActions semanticActions = new SemanticActions(new Stack<ASTNode>());
+    private Stack<ASTNode> stack = new Stack<ASTNode>();
+    private SemanticActions semanticActions = new SemanticActions(stack);
     public SynthacticalAnalyzer(LexicalAnalyzer lexer) throws IOException {
         this.lexer = lexer;
         this.lookahead = lexer.nextToken();
@@ -31,19 +32,10 @@ public class SynthacticalAnalyzer {
         else
             inErrorRecovery = true;
 
-        if(getType() == terminal){
-            if(signature.equals("classDecl") && getType() == Token.TokenType.ID) {
-                semanticActions.createId(lookahead);
-                semanticActions.createEpsilon(null);
-            } else if(signature.equals("visibility")){
-              semanticActions.createVisibility(lookahead);
-            } else if (signature.equals("funcHeadMemberTail") && getType() == Token.TokenType.RESERVED_CONSTRUCTOR) {
+        if(getType() == terminal) {
+            if(getType() == Token.TokenType.ID && signature.equals("funcHeadMemberTail")){
                 semanticActions.createScope(lookahead);
-            } else if (signature.equals("funcBody") && getType() == Token.TokenType.PUNCTUATION_LCURLY) {
-                semanticActions.createEpsilon(null);
-            } else if (signature.equals("arrayOrObject") && getType() == Token.TokenType.PUNCTUATION_LPAREN) {
-                semanticActions.createEpsilon(null);
-            } else {
+        } else if(getType() == Token.TokenType.ID){
                 semanticActions.createId(lookahead);
             }
             write(signature, terminal.getValue());
@@ -91,6 +83,10 @@ public class SynthacticalAnalyzer {
     public boolean parse() throws IOException {
 
         boolean start = start();
+        ASTNode root = stack.pop();
+        StringBuilder builder = new StringBuilder();
+        root.printTree(builder, "");
+        System.out.println(builder.toString());
         pwDerivation.close();
         pwError.close();
         return start;
@@ -178,7 +174,8 @@ public class SynthacticalAnalyzer {
     //FUNCDEF                    -> FUNCHEAD FUNCBODY
     private boolean funcDef() throws IOException {
         if (getType() == Token.TokenType.RESERVED_FUNCTION) {
-            if (funcHead() && funcBody() || inErrorRecovery) {
+            if (funcHead() && semanticActionsFuncDefFundHead() && funcBody() || inErrorRecovery) {
+                semanticActions.appendToFuncDef(lookahead);
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -190,10 +187,15 @@ public class SynthacticalAnalyzer {
         }
     }
 
+    private boolean semanticActionsFuncDefFundHead() {
+        semanticActions.migrateToFuncDef(lookahead);
+        return true;
+    }
+
     //FUNCHEAD                   -> function id FUNCHEADTAIL
     private boolean funcHead() throws IOException {
-        semanticActions.createEpsilon(null);
         if (getType() == Token.TokenType.RESERVED_FUNCTION) {
+            semanticActions.createEpsilon(null);
             if (match(Token.TokenType.RESERVED_FUNCTION) && match(Token.TokenType.ID) && funcHeadTail() || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
@@ -209,7 +211,7 @@ public class SynthacticalAnalyzer {
     //FUNCBODY                   -> lcurbr REPTLOCALVARORSTAT rcurbr
     private boolean funcBody() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LCURLY) {
-            if (match(Token.TokenType.PUNCTUATION_LCURLY) && reptLocalVarOrStat() && match(Token.TokenType.PUNCTUATION_RCURLY) || inErrorRecovery) {
+            if (match(Token.TokenType.PUNCTUATION_LCURLY) && semanticActionsFuncBodyLcurly() && reptLocalVarOrStat() && match(Token.TokenType.PUNCTUATION_RCURLY) || inErrorRecovery) {
                 semanticActions.createFuncBodyList();
                 inErrorRecovery = false;
                 return true;
@@ -220,6 +222,11 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsFuncBodyLcurly() {
+        semanticActions.createEpsilon(null);
+        return true;
     }
 
     //REPTLOCALVARORSTAT         -> LOCALVARORSTAT REPTLOCALVARORSTAT | EPSILON
@@ -271,7 +278,7 @@ public class SynthacticalAnalyzer {
     //                               | id STATEMENTIDNEST semi
     private boolean statement() throws IOException {
         if (getType() == Token.TokenType.ID) {
-            if (match(Token.TokenType.ID) && statementIdnest() && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+            if (match(Token.TokenType.ID) && indice() && statementIdnest() && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -280,7 +287,7 @@ public class SynthacticalAnalyzer {
         } else if (getType() == Token.TokenType.RESERVED_WRITE) {
             if (match(Token.TokenType.RESERVED_WRITE) && match(Token.TokenType.PUNCTUATION_LPAREN) && expr() && match(Token.TokenType.PUNCTUATION_RPAREN)
                     && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
-                semanticActions.createWhileStmt();
+                semanticActions.createWriteStmt();
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -499,7 +506,7 @@ public class SynthacticalAnalyzer {
     //follow: rpar, comma, semi, eq, geq, gt, leq, lt, neq, rsqbr, minus, or, plus, and, div, mult, dot, equal
     private boolean reptIdnest1() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LBRACKET) {
-            if (reptIdnest1() || inErrorRecovery) {
+            if (indice() && reptIdnest1() || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1172,7 +1179,7 @@ public class SynthacticalAnalyzer {
     //FUNCHEADMEMBERTAIL         -> id lpar FPARAMS rpar arrow RETURNTYPE | constructorkeyword lpar FPARAMS rpar
     private boolean funcHeadMemberTail() throws IOException {
         if (getType() == Token.TokenType.RESERVED_CONSTRUCTOR) {
-            if (match(Token.TokenType.RESERVED_CONSTRUCTOR) && match(Token.TokenType.PUNCTUATION_LPAREN) && fParams()
+            if (match(Token.TokenType.RESERVED_CONSTRUCTOR) && semanticActionsFuncHeadMemberTailConstructor() && match(Token.TokenType.PUNCTUATION_LPAREN) && fParams()
                     && match(Token.TokenType.PUNCTUATION_RPAREN) || inErrorRecovery) {
                 semanticActions.createFuncHead();
                 inErrorRecovery = false;
@@ -1196,6 +1203,10 @@ public class SynthacticalAnalyzer {
         }
     }
 
+    private boolean semanticActionsFuncHeadMemberTailConstructor() {
+        semanticActions.createScope(lookahead);
+        return true;
+    }
 
 
     // OPTINHERITS                -> isa id REPTINHERITSLIST | EPSILON
@@ -1575,7 +1586,7 @@ public class SynthacticalAnalyzer {
     //ARRAYOROBJECT              -> lpar APARAMS rpar | REPTARRAYSIZE
     private boolean arrayOrObject() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LPAREN) {
-            if (match(Token.TokenType.PUNCTUATION_LPAREN) && aParams() && semanticActionsArrayOrObjectAParams() && match(Token.TokenType.PUNCTUATION_RPAREN) || inErrorRecovery) {
+            if (match(Token.TokenType.PUNCTUATION_LPAREN) && semanticActionsArrayOrObjectLparen()&& aParams() && semanticActionsArrayOrObjectAParams() && match(Token.TokenType.PUNCTUATION_RPAREN) || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1596,6 +1607,11 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsArrayOrObjectLparen() {
+        semanticActions.createEpsilon(null);
+        return true;
     }
 
     private boolean semanticActionsArrayOrObjectAParams() {
@@ -1622,7 +1638,6 @@ public class SynthacticalAnalyzer {
 
     //PROG                       -> REPTPROG0
     private boolean prog() throws IOException {
-        semanticActions.createEpsilon(null);
         if(getType() == Token.TokenType.RESERVED_FUNCTION || getType() == Token.TokenType.RESERVED_CLASS
         || getType() == Token.TokenType.EOF){
             semanticActions.createEpsilon(lookahead);
@@ -1676,7 +1691,6 @@ public class SynthacticalAnalyzer {
     // VARIDNEST                  -> dot id VARIDNEST2
     private boolean varIdnest() throws IOException {
         if(getType() == Token.TokenType.PUNCTUATION_DOT){
-            semanticActions.createFuncCall();
             if(match(Token.TokenType.PUNCTUATION_DOT) && match(Token.TokenType.ID) && varIdnest2() || inErrorRecovery){
                 semanticActions.createDot();
                 inErrorRecovery = false;
@@ -1693,7 +1707,7 @@ public class SynthacticalAnalyzer {
     // VARIDNEST2                 -> lpar APARAMS rpar VARIDNEST | REPTIDNEST1
     private boolean varIdnest2() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LPAREN) {
-            if (match(Token.TokenType.PUNCTUATION_LPAREN) && aParams() && match(Token.TokenType.PUNCTUATION_RPAREN) && varIdnest() || inErrorRecovery) {
+            if (match(Token.TokenType.PUNCTUATION_LPAREN) && semanticActionsVarIdnest2Lparen() && aParams() && semanticActionsVarIdnest2AParams() && match(Token.TokenType.PUNCTUATION_RPAREN) && semanticActionsVarIdnest2Rparen() && varIdnest() || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -1711,4 +1725,20 @@ public class SynthacticalAnalyzer {
             return true;
         }
     }
+
+    private boolean semanticActionsVarIdnest2Rparen() {
+        semanticActions.createFuncCall();
+        return true;
+    }
+
+    private boolean semanticActionsVarIdnest2AParams() {
+        semanticActions.createAParams();
+        return true;
+    }
+
+    private boolean semanticActionsVarIdnest2Lparen() {
+        semanticActions.createEpsilon(null);
+        return true;
+    }
+
 }

@@ -226,8 +226,28 @@ public class SemanticActions {
         astStack.push(createSubtree("funcHead", null, popUntilEpsilon()));
     }
 
-    public void migrateToFuncDef(){
-        astStack.push(createSubtree("funcDef", null, pop()));
+    public void migrateToFuncDef(Token token) {
+        ASTNode node = pop();
+        astStack.push(migrateToFuncDef("funcDef", token, node));
+    }
+
+    public void appendToFuncDef(Token token) {
+        ASTNode node1 = pop();
+        ASTNode node2 = pop();
+        astStack.push(appendToFuncDef("funcDef", token, node1, node2));
+    }
+
+    // ... other methods
+
+    private ASTNode migrateToFuncDef(String name, Token token, ASTNode child) {
+        ASTNode funcDefNode = new ASTNode(name, token);
+        funcDefNode.addChild(child);
+        return funcDefNode;
+    }
+
+    private ASTNode appendToFuncDef(String name, Token token, ASTNode funcDefNode, ASTNode newChild) {
+        funcDefNode.addChild(newChild);
+        return funcDefNode;
     }
 }
 

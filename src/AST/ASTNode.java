@@ -29,7 +29,22 @@ public class ASTNode {
         child.father = this;
         child.height = this.height + 1;
     }
+    public void printTree(StringBuilder builder, String indent) {
+        builder.append(indent);
+        builder.append(name);
+        if (token != null) {
+            builder.append(" (").append(token.toString()).append(")");
+        }
+        builder.append("\n");
 
+        if (leftmostChild != null) {
+            leftmostChild.printTree(builder, indent + "  ");
+        }
+
+        if (rightSibling != null) {
+            rightSibling.printTree(builder, indent);
+        }
+    }
     public void addSubtree(ASTNode subtreeRoot) {
         addChild(subtreeRoot);
     }
