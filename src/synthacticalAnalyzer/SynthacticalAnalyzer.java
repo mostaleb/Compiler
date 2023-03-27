@@ -19,6 +19,7 @@ public class SynthacticalAnalyzer {
     private boolean inErrorRecovery = false;
     private Stack<ASTNode> stack = new Stack<ASTNode>();
     private SemanticActions semanticActions = new SemanticActions(stack);
+    private PrintWriter pwAST = new PrintWriter(new FileWriter("ast/tree.txt"));
     public SynthacticalAnalyzer(LexicalAnalyzer lexer) throws IOException {
         this.lexer = lexer;
         this.lookahead = lexer.nextToken();
@@ -86,7 +87,8 @@ public class SynthacticalAnalyzer {
         ASTNode root = stack.pop();
         StringBuilder builder = new StringBuilder();
         root.printTree(builder, "");
-        System.out.println(builder.toString());
+        pwAST.println(builder.toString());
+        pwAST.close();
         pwDerivation.close();
         pwError.close();
         return start;
@@ -304,7 +306,7 @@ public class SynthacticalAnalyzer {
             }
         } else if (getType() == Token.TokenType.RESERVED_RETURN) {
             if (match(Token.TokenType.RESERVED_RETURN) && match(Token.TokenType.PUNCTUATION_LPAREN) && expr() && match(Token.TokenType.PUNCTUATION_RPAREN)
-                  && statBlock() && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
+                  && match(Token.TokenType.PUNCTUATION_SEMICOLON) || inErrorRecovery) {
                 semanticActions.createReturnStmt();
                 inErrorRecovery = false;
                 return true;
@@ -361,7 +363,7 @@ public class SynthacticalAnalyzer {
     //                               | INDICE REPTIDNEST1 STATEMENTIDNEST3
     private boolean statementIdnest() throws IOException {
         if(getType() == Token.TokenType.PUNCTUATION_LBRACKET){
-            if(semanticActionsStatementIdnestIndice() && reptIdnest1() && semanticActionsStatementIdnestReptIdnest1() && statementIdnest3() || inErrorRecovery){
+            if(semanticActionsStatementIdnestIndice() && indice() && reptIdnest1() && semanticActionsStatementIdnestReptIdnest1() && statementIdnest3() || inErrorRecovery){
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -601,6 +603,7 @@ public class SynthacticalAnalyzer {
     //INDICE                     -> lsqbr ARITHEXPR rsqbr
     private boolean indice() throws IOException {
         if (getType() == Token.TokenType.PUNCTUATION_LBRACKET) {
+            semanticActions.createEpsilon(null);
             if (match(Token.TokenType.PUNCTUATION_LBRACKET) && arithExpr() && match(Token.TokenType.PUNCTUATION_RBRACKET) || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
@@ -1063,7 +1066,7 @@ public class SynthacticalAnalyzer {
     //follow: rpar, comma, semi, eq, geq, gt, leq, lt, neq, rsqbr, minus, or, plus
     private boolean rightRecTerm() throws IOException {
         if (getType() == Token.TokenType.OPERATOR_MULT || getType() == Token.TokenType.OPERATOR_DIV || getType() == Token.TokenType.RESERVED_AND) {
-            if (multOp() && semanticActionsRightRecTermMultOp() && factor() && semanticActionsRightRecTermFactor() &&rightRecTerm() || inErrorRecovery) {
+            if (multOp() && semanticActionsRightRecTermMultOp() && factor() && semanticActionsRightRecTermFactor() && rightRecTerm() || inErrorRecovery) {
                 inErrorRecovery = false;
                 return true;
             } else {

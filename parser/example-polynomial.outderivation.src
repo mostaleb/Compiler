@@ -1,457 +1,222 @@
 
-classDecl -> class {
-visibility -> public
-memberFuncHead -> function id : (
-fParams -> id :
-Type -> float
-memberFuncHead -> ) =>
-Type -> float
-memberFuncHead -> ;
-classDecl -> } ; class id
-optInherits -> isa
-classDecl -> {
-visibility -> private
-memberVarDecl -> attribute id : ;
-visibility -> private
-memberVarDecl -> attribute id :
-Type -> float
-memberVarDecl -> ;
-visibility -> public
-memberFuncHead -> constructor : (
-fParams -> id :
-Type -> float
-fParamsTail -> , id :
-Type -> float
-memberFuncHead -> ) ;
-visibility -> public
-memberFuncHead -> function id : (
-fParams -> id :
-Type -> float
-memberFuncHead -> ) =>
-Type -> float
-memberFuncHead -> ;
-classDecl -> } ; class id
-optInherits -> isa id
-classDecl -> {
-visibility -> private
-memberVarDecl -> attribute id :
-Type -> float
-memberVarDecl -> ;
-visibility -> private
-memberVarDecl -> attribute id :
-Type -> float
-memberVarDecl -> ;
-visibility -> private
-memberVarDecl -> attribute id :
-Type -> float
-memberVarDecl -> ;
-visibility -> public
-memberFuncHead -> constructor : (
-fParams -> id :
-Type -> float
-fParamsTail -> , id :
-Type -> float
-fParamsTail -> , id :
-Type -> float
-memberFuncHead -> ) ;
-visibility -> public
-memberFuncHead -> function id : (
-fParams -> id :
-Type -> float
-memberFuncHead -> ) =>
-Type -> float
-memberFuncHead -> ;
-classDecl -> } ;
 funcHead -> function id
-funcHeadTail -> ::
-funcHeadMemberTail -> id (
+funcHeadTail -> (
 fParams -> id :
-Type -> float
-funcHeadMemberTail -> ) =>
-Type -> float
+Type -> integer
+arraySize -> [
+arraySize2 -> ]
+fParamsTail -> , id :
+Type -> integer
+funcHeadTail -> ) =>
+returnType -> void
 funcBody -> {
-statement -> return (
+localVarDecl -> localvar id :
+Type -> integer
+localVarDecl -> ; localvar id :
+Type -> integer
+localVarDecl -> ; localvar id :
+Type -> integer
+localVarDecl -> ; localvar id :
+Type -> integer
+localVarDecl -> ;
+statement -> id
+assignOp -> =
+factor -> id
+statement -> ; id
+assignOp -> =
 factor -> integer
-statement -> ) ;
+statement -> ; id
+assignOp -> =
+factor -> integer
+statement -> ; id
+assignOp -> =
+factor -> integer
+statement -> ; while (
+factor -> id
+relOp -> <
+factor -> id
+addOp -> -
+factor -> integer
+statement -> )
+statBlock -> {
+statement -> while (
+factor -> id
+relOp -> <
+factor -> id
+addOp -> -
+factor -> id
+addOp -> -
+factor -> integer
+statement -> )
+statBlock -> {
+statement -> if (
+factor -> id
+indice -> [
+factor -> id
+indice -> ]
+relOp -> >
+factor -> id
+indice -> [
+factor -> id
+addOp -> +
+factor -> integer
+indice -> ]
+statement -> ) then
+statBlock -> {
+statement -> id
+assignOp -> =
+factor -> id
+indice -> [
+factor -> id
+indice -> ]
+statement -> ; id
+indice -> [
+factor -> id
+indice -> ]
+assignOp -> =
+factor -> id
+indice -> [
+factor -> id
+addOp -> +
+factor -> integer
+indice -> ]
+statement -> ; id
+indice -> [
+factor -> id
+addOp -> +
+factor -> integer
+indice -> ]
+assignOp -> =
+factor -> id
+statement -> ;
+statBlock -> }
+statement -> else ; id
+assignOp -> =
+factor -> id
+addOp -> +
+factor -> integer
+statement -> ;
+statBlock -> }
+statement -> ; id
+assignOp -> =
+factor -> id
+addOp -> +
+factor -> integer
+statement -> ;
+statBlock -> }
+statement -> ;
 funcBody -> }
 funcHead -> function id
-funcHeadTail -> ::
-funcHeadMemberTail -> id (
+funcHeadTail -> (
 fParams -> id :
-Type -> float
-funcHeadMemberTail -> ) =>
-Type -> float
+Type -> integer
+arraySize -> [
+arraySize2 -> ]
+fParamsTail -> , id :
+Type -> integer
+funcHeadTail -> ) =>
+returnType -> void
 funcBody -> {
 localVarDecl -> localvar id :
-Type -> float
+Type -> integer
+localVarDecl -> ; localvar id :
+Type -> integer
 localVarDecl -> ;
 statement -> id
 assignOp -> =
 factor -> id
 statement -> ; id
 assignOp -> =
+factor -> integer
+statement -> ; while (
 factor -> id
-multOp -> *
+relOp -> <
+factor -> id
+statement -> )
+statBlock -> {
+statement -> write (
+factor -> id
+indice -> [
+factor -> id
+indice -> ]
+statement -> ) ; id
+assignOp -> =
 factor -> id
 addOp -> +
-factor -> id
-statement -> ; id
-assignOp -> =
-factor -> id
-multOp -> *
-factor -> id
-addOp -> +
-factor -> id
-statement -> ; return (
-factor -> id
-statement -> ) ;
-funcBody -> }
-funcHead -> function id
-funcHeadTail -> ::
-funcHeadMemberTail -> constructor (
-fParams -> id :
-Type -> float
-fParamsTail -> , id :
-Type -> float
-fParamsTail -> , id :
-Type -> float
-funcHeadMemberTail -> )
-funcBody -> {
-statement -> id
-statementIdnest -> . id
-assignOp -> =
-factor -> id
-statement -> ; id
-statementIdnest -> . id
-assignOp -> =
-factor -> id
-statement -> ; id
-statementIdnest -> . id
-assignOp -> =
-factor -> id
+factor -> integer
 statement -> ;
-funcBody -> }
-funcHead -> function id
-funcHeadTail -> ::
-funcHeadMemberTail -> constructor (
-fParams -> id :
-Type -> float
-fParamsTail -> , id :
-Type -> float
-funcHeadMemberTail -> )
-funcBody -> {
-statement -> id
-statementIdnest -> . id
-assignOp -> =
-factor -> id
-statement -> ; id
-statementIdnest -> . id
-assignOp -> =
-factor -> id
+statBlock -> }
 statement -> ;
-funcBody -> }
-funcHead -> function id
-funcHeadTail -> ::
-funcHeadMemberTail -> id (
-fParams -> id :
-Type -> float
-funcHeadMemberTail -> ) =>
-Type -> float
-funcBody -> {
-localVarDecl -> localvar id :
-Type -> float
-localVarDecl -> ;
-statement -> id
-assignOp -> =
-factor -> float
-statement -> ; id
-assignOp -> =
-factor -> id
-multOp -> *
-factor -> id
-addOp -> +
-factor -> id
-statement -> ; return (
-factor -> id
-statement -> ) ;
 funcBody -> }
 funcHead -> function id
 funcHeadTail -> ( ) =>
 returnType -> void
 funcBody -> {
 localVarDecl -> localvar id :
-Type -> id
-arrayOrObject -> (
-factor -> integer
-aParamsTail -> ,
-factor -> float
-arrayOrObject -> )
-localVarDecl -> ; localvar id :
-Type -> id
-arrayOrObject -> (
-sign -> -
-factor -> float
-aParamsTail -> ,
-factor -> float
-aParamsTail -> ,
-factor -> float
-arrayOrObject -> )
-localVarDecl -> ; localvar id :
 Type -> integer
+arraySize -> [
+arraySize2 -> integer ]
 localVarDecl -> ;
 statement -> id
+indice -> [
+factor -> integer
+indice -> ]
 assignOp -> =
 factor -> integer
-statement -> ; while (
-factor -> id
-relOp -> <=
+statement -> ; id
+indice -> [
 factor -> integer
-statement -> )
-statBlock -> {
-statement -> write (
-factor -> id
-statement -> ) ; write (
-factor -> id
-idnest -> . id
-idnest2 -> (
-factor -> id
-idnest2 -> )
-statement -> ) ; write (
-factor -> id
-idnest -> . id
-idnest2 -> (
-factor -> id
-idnest2 -> )
-statement -> ) ;
-statBlock -> }
-statement -> ;
-funcBody -> }
-start -> eof
-classDecl -> class {
-visibility -> public
-memberFuncHead -> function id : (
-fParams -> id :
-Type -> float
-memberFuncHead -> ) =>
-Type -> float
-memberFuncHead -> ;
-classDecl -> } ; class id
-optInherits -> isa
-classDecl -> {
-visibility -> private
-memberVarDecl -> attribute id : ;
-visibility -> private
-memberVarDecl -> attribute id :
-Type -> float
-memberVarDecl -> ;
-visibility -> public
-memberFuncHead -> constructor : (
-fParams -> id :
-Type -> float
-fParamsTail -> , id :
-Type -> float
-memberFuncHead -> ) ;
-visibility -> public
-memberFuncHead -> function id : (
-fParams -> id :
-Type -> float
-memberFuncHead -> ) =>
-Type -> float
-memberFuncHead -> ;
-classDecl -> } ; class id
-optInherits -> isa id
-classDecl -> {
-visibility -> private
-memberVarDecl -> attribute id :
-Type -> float
-memberVarDecl -> ;
-visibility -> private
-memberVarDecl -> attribute id :
-Type -> float
-memberVarDecl -> ;
-visibility -> private
-memberVarDecl -> attribute id :
-Type -> float
-memberVarDecl -> ;
-visibility -> public
-memberFuncHead -> constructor : (
-fParams -> id :
-Type -> float
-fParamsTail -> , id :
-Type -> float
-fParamsTail -> , id :
-Type -> float
-memberFuncHead -> ) ;
-visibility -> public
-memberFuncHead -> function id : (
-fParams -> id :
-Type -> float
-memberFuncHead -> ) =>
-Type -> float
-memberFuncHead -> ;
-classDecl -> } ;
-funcHead -> function id
-funcHeadTail -> ::
-funcHeadMemberTail -> id (
-fParams -> id :
-Type -> float
-funcHeadMemberTail -> ) =>
-Type -> float
-funcBody -> {
-statement -> return (
+indice -> ]
+assignOp -> =
 factor -> integer
-statement -> ) ;
-funcBody -> }
-funcHead -> function id
-funcHeadTail -> ::
-funcHeadMemberTail -> id (
-fParams -> id :
-Type -> float
-funcHeadMemberTail -> ) =>
-Type -> float
-funcBody -> {
-localVarDecl -> localvar id :
-Type -> float
-localVarDecl -> ;
-statement -> id
-assignOp -> =
-factor -> id
 statement -> ; id
-assignOp -> =
-factor -> id
-multOp -> *
-factor -> id
-addOp -> +
-factor -> id
-statement -> ; id
-assignOp -> =
-factor -> id
-multOp -> *
-factor -> id
-addOp -> +
-factor -> id
-statement -> ; return (
-factor -> id
-statement -> ) ;
-funcBody -> }
-funcHead -> function id
-funcHeadTail -> ::
-funcHeadMemberTail -> constructor (
-fParams -> id :
-Type -> float
-fParamsTail -> , id :
-Type -> float
-fParamsTail -> , id :
-Type -> float
-funcHeadMemberTail -> )
-funcBody -> {
-statement -> id
-statementIdnest -> . id
-assignOp -> =
-factor -> id
-statement -> ; id
-statementIdnest -> . id
-assignOp -> =
-factor -> id
-statement -> ; id
-statementIdnest -> . id
-assignOp -> =
-factor -> id
-statement -> ;
-funcBody -> }
-funcHead -> function id
-funcHeadTail -> ::
-funcHeadMemberTail -> constructor (
-fParams -> id :
-Type -> float
-fParamsTail -> , id :
-Type -> float
-funcHeadMemberTail -> )
-funcBody -> {
-statement -> id
-statementIdnest -> . id
-assignOp -> =
-factor -> id
-statement -> ; id
-statementIdnest -> . id
-assignOp -> =
-factor -> id
-statement -> ;
-funcBody -> }
-funcHead -> function id
-funcHeadTail -> ::
-funcHeadMemberTail -> id (
-fParams -> id :
-Type -> float
-funcHeadMemberTail -> ) =>
-Type -> float
-funcBody -> {
-localVarDecl -> localvar id :
-Type -> float
-localVarDecl -> ;
-statement -> id
-assignOp -> =
-factor -> float
-statement -> ; id
-assignOp -> =
-factor -> id
-multOp -> *
-factor -> id
-addOp -> +
-factor -> id
-statement -> ; return (
-factor -> id
-statement -> ) ;
-funcBody -> }
-funcHead -> function id
-funcHeadTail -> ( ) =>
-returnType -> void
-funcBody -> {
-localVarDecl -> localvar id :
-Type -> id
-arrayOrObject -> (
+indice -> [
 factor -> integer
+indice -> ]
+assignOp -> =
+factor -> integer
+statement -> ; id
+indice -> [
+factor -> integer
+indice -> ]
+assignOp -> =
+factor -> integer
+statement -> ; id
+indice -> [
+factor -> integer
+indice -> ]
+assignOp -> =
+factor -> integer
+statement -> ; id
+indice -> [
+factor -> integer
+indice -> ]
+assignOp -> =
+factor -> integer
+statement -> ; id
+indice -> [
+factor -> integer
+indice -> ]
+assignOp -> =
+factor -> integer
+statement -> ; id
+statementIdnest -> (
+factor -> id
 aParamsTail -> ,
-factor -> float
-arrayOrObject -> )
-localVarDecl -> ; localvar id :
-Type -> id
-arrayOrObject -> (
-sign -> -
-factor -> float
-aParamsTail -> ,
-factor -> float
-aParamsTail -> ,
-factor -> float
-arrayOrObject -> )
-localVarDecl -> ; localvar id :
-Type -> integer
-localVarDecl -> ;
-statement -> id
-assignOp -> =
 factor -> integer
-statement -> ; while (
+statementIdnest -> )
+statement -> ; id
+statementIdnest -> (
 factor -> id
-relOp -> <=
+aParamsTail -> ,
 factor -> integer
-statement -> )
-statBlock -> {
-statement -> write (
+statementIdnest -> )
+statement -> ; id
+statementIdnest -> (
 factor -> id
-statement -> ) ; write (
-factor -> id
-idnest -> . id
-idnest2 -> (
-factor -> id
-idnest2 -> )
-statement -> ) ; write (
-factor -> id
-idnest -> . id
-idnest2 -> (
-factor -> id
-idnest2 -> )
-statement -> ) ;
-statBlock -> }
+aParamsTail -> ,
+factor -> integer
+statementIdnest -> )
 statement -> ;
 funcBody -> }
 start -> eof
