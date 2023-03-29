@@ -1,0 +1,31 @@
+root
+  funcBody
+    funcCall
+      aParam
+        number ([), ), 51])
+        dataMember
+          indexList
+          id ([id, arr, 51])
+      id ([id, printarray, 51])
+    funcCall
+      aParam
+        number ([), ), 50])
+        dataMember
+          indexList
+          id ([id, arr, 50])
+      id ([id, bubbleSort, 50])
+    funcCall
+      aParam
+        number ([), ), 49])
+        dataMember
+          indexList
+          id ([id, arr, 49])
+      id ([id, printarray, 49])
+    assignStmt
+      number ([;, ;, 48])
+      number ([], ], 48])
+    id ([id, arr, 48])
+  assignStmt
+    number ([;, ;, 47])
+    number ([], ], 47])
+
