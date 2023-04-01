@@ -11,8 +11,8 @@ import java.util.Stack;
 public class SynthacticalAnalyzer {
     private Token lookahead;
     private LexicalAnalyzer lexer;
-    private PrintWriter pwDerivation = new PrintWriter(new FileWriter("parser/example-polynomial.outderivation.src", true));
-    private PrintWriter pwError = new PrintWriter(new FileWriter("parser/example-polynomial.outsyntaxerror.src", true));
+    private PrintWriter pwDerivation = new PrintWriter(new FileWriter("parser/example-bubblesort.outderivation.src", true));
+    private PrintWriter pwError = new PrintWriter(new FileWriter("parser/example-bubblesort.outsyntaxerror.src", true));
     private String currentLHS = "";
     private ArrayList<String> LHSInError = new ArrayList<String>();
     private String missingStatementMessage = "Missing Statement expected";
@@ -107,6 +107,7 @@ public class SynthacticalAnalyzer {
     //START                      -> PROG eof
     private boolean start() throws IOException {
         if(prog() && match(Token.TokenType.EOF)){
+            semanticActions.createRoot();
             return true;
         } else {
             return false;
@@ -363,7 +364,8 @@ public class SynthacticalAnalyzer {
     //                               | INDICE REPTIDNEST1 STATEMENTIDNEST3
     private boolean statementIdnest() throws IOException {
         if(getType() == Token.TokenType.PUNCTUATION_LBRACKET){
-            if(semanticActionsStatementIdnestIndice() && indice() && reptIdnest1() && semanticActionsStatementIdnestReptIdnest1() && statementIdnest3() || inErrorRecovery){
+            semanticActions.createEpsilon(null);
+            if(indice() && reptIdnest1() && semanticActionsStatementIdnestReptIdnest1() && statementIdnest3() || inErrorRecovery){
                 inErrorRecovery = false;
                 return true;
             } else {
@@ -610,6 +612,8 @@ public class SynthacticalAnalyzer {
             } else {
                 return false;
             }
+        } else if (getType() == Token.TokenType.OPERATOR_ASSIGN || getType() == Token.TokenType.PUNCTUATION_LPAREN) {
+            return true;
         } else {
             error(funcName(), missingStatementMessage);
             return true;
@@ -1191,7 +1195,7 @@ public class SynthacticalAnalyzer {
                 return false;
             }
         } else if (getType() == Token.TokenType.ID) {
-            if (match(Token.TokenType.ID) && match(Token.TokenType.PUNCTUATION_LPAREN) && fParams() && match(Token.TokenType.PUNCTUATION_RPAREN)
+            if (match(Token.TokenType.ID) && semanticActionsFuncHeadMemberTailID() && match(Token.TokenType.PUNCTUATION_LPAREN) && fParams() && match(Token.TokenType.PUNCTUATION_RPAREN)
                     && match(Token.TokenType.OPERATOR_ARROW) && returnType() || inErrorRecovery) {
                 semanticActions.createReturnType(lookahead);
                 semanticActions.createFuncHead();
@@ -1204,6 +1208,11 @@ public class SynthacticalAnalyzer {
             error(funcName(), missingStatementMessage);
             return true;
         }
+    }
+
+    private boolean semanticActionsFuncHeadMemberTailID() {
+        semanticActions.createScope(lookahead);
+        return true;
     }
 
     private boolean semanticActionsFuncHeadMemberTailConstructor() {
@@ -1645,7 +1654,6 @@ public class SynthacticalAnalyzer {
         || getType() == Token.TokenType.EOF){
             semanticActions.createEpsilon(lookahead);
             if (reptProg0() || inErrorRecovery) {
-                semanticActions.createRoot();
                 inErrorRecovery = false;
                 return true;
             } else {

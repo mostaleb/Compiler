@@ -105,19 +105,19 @@ public class SemanticActions {
     }
 
     public void createMultOp(Token token) {
-        astStack.push(createSubtree("multOp", token, pop(), pop(), pop(), createLeaf("multOp", token)));
+        astStack.push(createSubtree("multOp", token, pop(), pop(), pop()));
     }
 
     public void createAddOp(Token token) {
-        astStack.push(createSubtree("addOp", token, pop(), pop(), pop(), createLeaf("addOp", token)));
+        astStack.push(createSubtree("addOp", token, pop(), pop(), pop()));
     }
 
     public void createRelOp(Token token) {
-        astStack.push(createSubtree("relOp", token, pop(), pop(), pop(), createLeaf("relOp", token)));
+        astStack.push(createSubtree("relOp", token, pop(), pop(), pop()));
     }
 
     public void createSign(Token token) {
-        astStack.push(createSubtree("sign", token, pop(), pop(), createLeaf("sign", token)));
+        astStack.push(createSubtree("sign", token, pop(), pop()));
     }
 
     public void createRoot() {
@@ -127,8 +127,6 @@ public class SemanticActions {
     public void createInheritList() {
         astStack.push(createSubtree("inheritList", null, popUntilEpsilon()));
     }
-
-    // ... continue with the remaining create* methods for the semantic actions
 
     public void createMemberDeclList() {
         astStack.push(createSubtree("declList", null, popUntilEpsilon()));
@@ -227,14 +225,11 @@ public class SemanticActions {
     }
 
     public void migrateToFuncDef(Token token) {
-        ASTNode node = pop();
-        astStack.push(migrateToFuncDef("funcDef", token, node));
+        astStack.push(migrateToFuncDef("funcDef", token, pop()));
     }
 
     public void appendToFuncDef(Token token) {
-        ASTNode node1 = pop();
-        ASTNode node2 = pop();
-        astStack.push(appendToFuncDef("funcDef", token, node1, node2));
+        astStack.push(appendToFuncDef("funcDef", token, pop(), pop()));
     }
 
     // ... other methods

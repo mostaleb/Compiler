@@ -1,15 +1,20 @@
 package AST;
 
 import lexicalAnalyzer.Token;
+import semanticAnalyzer.SymbTabCreationConcreteVisitor;
+import semanticAnalyzer.SymbTabEntry;
+import semanticAnalyzer.SymbolTable;
 
 public class ASTNode {
     private String name;
     private int height = 0;
-    private ASTNode father;
-    private ASTNode rightSibling;
-    private ASTNode leftmostSibling;
-    private ASTNode leftmostChild;
+    private ASTNode father = null;
+    private ASTNode rightSibling = null;
+    private ASTNode leftmostSibling = null;
+    private ASTNode leftmostChild = null;
     private Token token;
+
+    private SymbolTable symbolTable = null;
     public ASTNode(String name, Token token) {
         this.name = name;
         this.token = token;
@@ -36,7 +41,8 @@ public class ASTNode {
             builder.append(" (").append(token.toString()).append(")");
         }
         builder.append("\n");
-
+        SymbTabCreationConcreteVisitor creationConcreteVisitor = new SymbTabCreationConcreteVisitor();
+        creationConcreteVisitor.visit(this);
         if (leftmostChild != null) {
             leftmostChild.printTree(builder, indent + "  ");
         }
@@ -45,55 +51,30 @@ public class ASTNode {
             rightSibling.printTree(builder, indent);
         }
     }
-    public void addSubtree(ASTNode subtreeRoot) {
-        addChild(subtreeRoot);
+
+    public void createNewTable(SymbolTable symbolTable){
+     if(this.symbolTable == null){
+         this.symbolTable = symbolTable;
+     } else {
+         throw new RuntimeException("This AST Node already have a Symbol Table.");
+     }
     }
 
-    public String getName() {
-        return name;
+    public void insert(SymbTabEntry symbTabEntry){
+        if(this.symbolTable != null){
+            this.symbolTable.addEntry(symbTabEntry);
+        } else {
+            throw new RuntimeException("This AST Node doesn't have a Symbol Table");
+        }
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public ASTNode getFather() {
-        return father;
-    }
-
-    public void setFather(ASTNode father) {
-        this.father = father;
-    }
-
-    public ASTNode getRightSibling() {
-        return rightSibling;
-    }
-
-    public void setRightSibling(ASTNode rightSibling) {
-        this.rightSibling = rightSibling;
-    }
-
-    public ASTNode getLeftmostSibling() {
-        return leftmostSibling;
-    }
-
-    public void setLeftmostSibling(ASTNode leftmostSibling) {
-        this.leftmostSibling = leftmostSibling;
-    }
-
-    public ASTNode getLeftmostChild() {
+    public ASTNode getLeftmostChild(){
         return leftmostChild;
     }
-
-    public void setLeftmostChild(ASTNode leftmostChild) {
-        this.leftmostChild = leftmostChild;
+    public ASTNode getRightSibling(){
+        return rightSibling;
+    }
+    public String getName() {
+        return name;
     }
 }
